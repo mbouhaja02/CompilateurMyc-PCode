@@ -232,11 +232,11 @@ if : IF                       {}
 ;
 
 else : ELSE                   {}
-;
+; 
 
 // IV.4. Iterations
 
-loop : while while_cond inst  {}
+loop : while while_cond inst  {} 
 ;
 
 while_cond : PO exp PF        {}
@@ -251,7 +251,15 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                { printf("ADDI\n");}
+| exp PLUS exp                {if(type2string($1)=="float"){
+  printf("ADDF\n");
+}
+else {
+  printf("ADDI\n");
+}
+}
+
+
 | exp MOINS exp               { printf("MINUSI\n");}
 | exp STAR exp                { printf("MULTI\n");}
 | exp DIV exp                 { printf("DIVI\n");}
@@ -259,7 +267,7 @@ exp
 | ID                          {}
 | app                         {}
 | NUM                         {printf("LOADI(%d) \n", $1);}
-| DEC                         {}
+| DEC                         {printf("LOADF(%f) \n", $1);}
 
 
 // V.2. Booléens
