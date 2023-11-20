@@ -4,9 +4,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
   
 extern int yylex();
 extern int yyparse();
+
+int retour = 0;
 
 void yyerror (char* s) {
   printf ("%s\n",s);
@@ -100,7 +103,17 @@ fun : type fun_head fun_body   {}
 fun_head : ID PO PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
+  if (strcmp($1, "main") == 0) {
+    // Générer l'entête pour pcode_main si c'est la fonction main
+    retour=1;
+    printf("void pcode_main() { \n");
   }
+  else{
+    retour=0;
+  }
+}
+
+  
 
 | ID PO params PF              {
    // Pas de déclaration de fonction à l'intérieur de fonctions !
@@ -189,8 +202,11 @@ aff : ID EQ exp               {}
 
 
 // IV.2 Return
-ret : RETURN exp              {}
-| RETURN PO PF                {}
+ret : RETURN exp              {if(retour){
+      printf("LOADI(%d)\n", $2);
+    }
+  printf("return;\n}");}
+| RETURN PO PF                {printf("return;\n");}
 ;
 
 // IV.3. Conditionelles
@@ -232,7 +248,7 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                {}
+| exp PLUS exp                {printf("LOADI(%d)\n", $1); printf("LOADI(%d)\n", $3); printf("ADDI\n");}
 | exp MOINS exp               {}
 | exp STAR exp                {}
 | exp DIV exp                 {}
