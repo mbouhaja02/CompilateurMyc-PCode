@@ -7,6 +7,6 @@ return track[sp-1].int_value;
 }
 
 void pcode_main() { 
-LOADI(1)
-return;
+LOADI(1) 
+return();
 }

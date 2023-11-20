@@ -9,7 +9,13 @@
 extern int yylex();
 extern int yyparse();
 
-int retour = 0;
+int retour = 1;
+
+int makeNum ()
+{
+  static int n = 0;
+  return ++n;
+}
 
 void yyerror (char* s) {
   printf ("%s\n",s);
@@ -202,10 +208,7 @@ aff : ID EQ exp               {}
 
 
 // IV.2 Return
-ret : RETURN exp              {if(retour){
-      printf("LOADI(%d)\n", $2);
-    }
-  printf("return;\n}");}
+ret : RETURN exp              {printf("return();\n}");}
 | RETURN PO PF                {printf("return;\n");}
 ;
 
@@ -248,14 +251,14 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                {printf("LOADI(%d)\n", $1); printf("LOADI(%d)\n", $3); printf("ADDI\n");}
-| exp MOINS exp               {}
-| exp STAR exp                {}
-| exp DIV exp                 {}
+| exp PLUS exp                { printf("ADDI\n");}
+| exp MOINS exp               { printf("MINUSI\n");}
+| exp STAR exp                { printf("MULTI\n");}
+| exp DIV exp                 { printf("DIVI\n");}
 | PO exp PF                   {}
 | ID                          {}
 | app                         {}
-| NUM                         {}
+| NUM                         {printf("LOADI(%d) \n", $1);}
 | DEC                         {}
 
 
