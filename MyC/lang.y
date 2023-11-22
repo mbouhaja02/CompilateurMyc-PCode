@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
   
 extern int yylex();
 extern int yyparse();
@@ -150,7 +151,7 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
-| ID                           {printf("//Declare %s of type int with offset %d at depth %d \nLOADI(0)\n\n", $1, offset, depth);}
+| ID                           {printf("//Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, $1,offset, depth);}
 ;
 
 type
@@ -299,6 +300,9 @@ return stack[sp-1].int_value;\n\
 }\n";  
 
  printf("%s\n",header); // ouput header
+
+int x=261;
+printf("hana %s \n", type2string(x));
   
 return yyparse ();
  
