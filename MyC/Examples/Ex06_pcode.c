@@ -14,12 +14,12 @@ LOADI(0)
 
 void pcode_main(){
 LOADI(3)
-STOREP(2) // storing x value
+STOREP(0) // storing x value
 LOADF(2.000000)
-STOREP(3) // storing y value
+STOREP(1) // storing y value
 LOADI(1)
-LOADP(3)
-LOADP(2)
+LOADP(1)
+LOADP(0)
 MULTI 
 ADDI 
 return;

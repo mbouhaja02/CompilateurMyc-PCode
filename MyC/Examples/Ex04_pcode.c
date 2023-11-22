@@ -10,7 +10,9 @@ void pcode_main(){
 LOADI(1)
 LOADF(2.200000)
 LOADI(3)
+I2F // converting second arg to float
 MULTF 
+I2F2 // converting second arg to float
 ADDF 
 return;
 }

@@ -17,9 +17,13 @@ void yyerror (char* s) {
  int depth=0; // block depth
  int offset=0; // block offset
 
+ int convert=1;//convert int to float
+ int store=0;//STOREP
+
  int makeOffset(){
   return offset++;
  }
+
  
  
 %}
@@ -193,7 +197,7 @@ af : AF                       {}
 
 // IV.1 Affectations
 
-aff : ID EQ exp               {set_symbol_value($1, makeOffset());printf("STOREP(%d) // storing %s value\n", get_symbol_value($1), $1);}
+aff : ID EQ exp               {printf("STOREP(%d) // storing %s value\n", store, $1); store++;}
 ;
 
 
@@ -242,21 +246,37 @@ exp
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
 | exp PLUS exp                {if($1==FLOAT || $3==FLOAT){
-                                    printf("ADDF \n");
+                                    if(convert==1){
+                                      printf("I2F");
+                                      convert++;
+                                    }
+                                    else{
+                                      printf("I2F%d", convert);
+                                    }
+                                    printf(" // converting second arg to float\nADDF \n", convert);
+                                    $1==FLOAT;$3=FLOAT;
                                 }
                                 else{
                                   printf("ADDI \n");
                                 }}
 | exp MOINS exp               {printf("MINUSI\n");}
 | exp STAR exp                {if($1==FLOAT || $3==FLOAT){
-                                    printf("MULTF \n");
+                                    if(convert==1){
+                                      printf("I2F");
+                                      convert++;
+                                    }
+                                    else{
+                                      printf("I2F%d", convert);
+                                    }
+                                    printf(" // converting second arg to float\nMULTF \n", convert);
+                                    $1==FLOAT;$3=FLOAT;
                                 }
                                 else{
                                   printf("MULTI \n");
                                 }}
 | exp DIV exp                 {printf("DIVI\n");}
 | PO exp PF                   {}
-| ID                          {printf("LOADP(%d)\n", get_symbol_value($1), $1);}
+| ID                          {offset--;printf("LOADP(%d)\n", offset);}
 | app                         {}
 | NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
