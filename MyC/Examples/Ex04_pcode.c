@@ -10,7 +10,7 @@ void pcode_main(){
 LOADI(1)
 LOADF(2.200000)
 LOADI(3)
-MULTI
-ADDI
-return ();
+MULTF 
+ADDF 
+return;
 }

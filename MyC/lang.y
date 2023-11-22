@@ -151,7 +151,7 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
-| ID                           {printf("//Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, $1,offset, depth);}
+| ID                           {printf("//Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, $1,offset, depth);makeOffset();}
 ;
 
 type
@@ -193,13 +193,13 @@ af : AF                       {}
 
 // IV.1 Affectations
 
-aff : ID EQ exp               {set_symbol_value($1, makeOffset());printf("STOREP(%d) // storing %d value\n", get_symbol_value($1), $1);}
+aff : ID EQ exp               {set_symbol_value($1, makeOffset());printf("STOREP(%d) // storing %s value\n", get_symbol_value($1), $1);}
 ;
 
 
 // IV.2 Return
-ret : RETURN exp              {printf("return ();\n}");}
-| RETURN PO PF                {printf("return;\n");}
+ret : RETURN  exp             {printf("return;\n}");}
+| RETURN PO PF                {}
 ;
 
 // IV.3. Conditionelles
@@ -241,15 +241,25 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                {printf("ADDI\n");}
+| exp PLUS exp                {if($1==FLOAT || $3==FLOAT){
+                                    printf("ADDF \n");
+                                }
+                                else{
+                                  printf("ADDI \n");
+                                }}
 | exp MOINS exp               {printf("MINUSI\n");}
-| exp STAR exp                {printf("MULTI\n");}
+| exp STAR exp                {if($1==FLOAT || $3==FLOAT){
+                                    printf("MULTF \n");
+                                }
+                                else{
+                                  printf("MULTI \n");
+                                }}
 | exp DIV exp                 {printf("DIVI\n");}
 | PO exp PF                   {}
-| ID                          {printf("LOADP(%d)\n", get_symbol_value($1));}
+| ID                          {printf("LOADP(%d)\n", get_symbol_value($1), $1);}
 | app                         {}
-| NUM                         {printf("LOADI(%d)\n", $1);}
-| DEC                         {printf("LOADF(%f)\n", $1);}
+| NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
+| DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
 
 
 // V.2. Booléens
@@ -301,8 +311,6 @@ return stack[sp-1].int_value;\n\
 
  printf("%s\n",header); // ouput header
 
-int x=261;
-printf("hana %s \n", type2string(x));
   
 return yyparse ();
  
