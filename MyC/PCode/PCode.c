@@ -54,7 +54,7 @@ void test() {
   
   LOADI(22)
   LOADF(4.5)
-  DROP
+  DROP(4)
   MINUSI
   MINUSF  
   I2F

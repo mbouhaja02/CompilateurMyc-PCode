@@ -41,7 +41,7 @@ attribute new_attribute ();
 /* get the symbol value of symb_id from the symbol table, NULL if it fails */
 attribute get_symbol_value(sid symb_id);
 
-/* set the value of symbol symb_id to value, return NULL if it fails */
+/* add the symbol symb_id with given value */
 attribute set_symbol_value(sid symb_id,attribute value);
 
 #endif

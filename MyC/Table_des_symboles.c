@@ -65,24 +65,10 @@ attribute get_symbol_value(sid symb_id) {
 	exit(-1);
 };
 
-/* set the value of symbol symb_id to value */
+/* add the symbol symb_id with given value */
 attribute set_symbol_value(sid symb_id,attribute value) {
 
-	elem * tracker;
-	
-	/* look for the presence of symb_id in storage */
-	
-	tracker = storage;
-	while (tracker) {
-		if (tracker -> symbol_name == symb_id) {
-			tracker -> symbol_value = value;
-			return tracker -> symbol_value;
-		}
-		tracker = tracker -> next;
-	}
-	
-	/* otherwise insert it at head of storage with proper value */
-	
+	elem * tracker;	
 	tracker = malloc(sizeof(elem));
 	tracker -> symbol_name = symb_id;
 	tracker -> symbol_value = value;

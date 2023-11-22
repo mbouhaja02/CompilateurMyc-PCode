@@ -4,18 +4,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
   
 extern int yylex();
 extern int yyparse();
-
-int retour = 1;
-
-int makeNum ()
-{
-  static int n = 0;
-  return ++n;
-}
 
 void yyerror (char* s) {
   printf ("%s\n",s);
@@ -23,6 +14,11 @@ void yyerror (char* s) {
   }
 		
  int depth=0; // block depth
+ int offset=0; // block offset
+
+ int makeOffset(){
+  return offset++;
+ }
  
  
 %}
@@ -109,17 +105,10 @@ fun : type fun_head fun_body   {}
 fun_head : ID PO PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
-  if (strcmp($1, "main") == 0) {
-    // Générer l'entête pour pcode_main si c'est la fonction main
-    retour=1;
-    printf("void pcode_main() { \n");
+  if(strcmp($1, "main")==0){
+    printf("void pcode_main(){\n");
   }
-  else{
-    retour=0;
   }
-}
-
-  
 
 | ID PO params PF              {
    // Pas de déclaration de fonction à l'intérieur de fonctions !
@@ -161,7 +150,7 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
-| ID                           {}
+| ID                           {printf("//Declare %s of type int with offset %d at depth %d \nLOADI(0)\n\n", $1, offset, depth);}
 ;
 
 type
@@ -203,12 +192,12 @@ af : AF                       {}
 
 // IV.1 Affectations
 
-aff : ID EQ exp               {}
+aff : ID EQ exp               {set_symbol_value($1, makeOffset());printf("STOREP(%d) // storing %d value\n", get_symbol_value($1), $1);}
 ;
 
 
 // IV.2 Return
-ret : RETURN exp              {printf("return();\n}");}
+ret : RETURN exp              {printf("return ();\n}");}
 | RETURN PO PF                {printf("return;\n");}
 ;
 
@@ -232,11 +221,11 @@ if : IF                       {}
 ;
 
 else : ELSE                   {}
-; 
+;
 
 // IV.4. Iterations
 
-loop : while while_cond inst  {} 
+loop : while while_cond inst  {}
 ;
 
 while_cond : PO exp PF        {}
@@ -251,23 +240,15 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                {if(type2string($1)=="float"){
-  printf("ADDF\n");
-}
-else {
-  printf("ADDI\n");
-}
-}
-
-
-| exp MOINS exp               { printf("MINUSI\n");}
-| exp STAR exp                { printf("MULTI\n");}
-| exp DIV exp                 { printf("DIVI\n");}
+| exp PLUS exp                {printf("ADDI\n");}
+| exp MOINS exp               {printf("MINUSI\n");}
+| exp STAR exp                {printf("MULTI\n");}
+| exp DIV exp                 {printf("DIVI\n");}
 | PO exp PF                   {}
-| ID                          {}
+| ID                          {printf("LOADP(%d)\n", get_symbol_value($1));}
 | app                         {}
-| NUM                         {printf("LOADI(%d) \n", $1);}
-| DEC                         {printf("LOADF(%f) \n", $1);}
+| NUM                         {printf("LOADI(%d)\n", $1);}
+| DEC                         {printf("LOADF(%f)\n", $1);}
 
 
 // V.2. Booléens
@@ -314,7 +295,7 @@ char * header=
 \n\
 int main() {\n\
 pcode_main();\n\
-return track[sp-1].int_value;\n\
+return stack[sp-1].int_value;\n\
 }\n";  
 
  printf("%s\n",header); // ouput header

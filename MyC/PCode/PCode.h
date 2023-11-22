@@ -77,8 +77,8 @@ extern int fp;
 
 #define LOADF(F)  stack[sp ++].float_value = F;
 
-// depiler la valeur de sommet de pile
-#define DROP --sp;
+// depiler n valeurs du sommet de pile
+#define DROP(n)   sp = sp-n;
 
 /********** II. Opérations arithmetiques binaires *********/
 
@@ -204,7 +204,8 @@ Il devra être stocké, à la compilation, dans la table des symboles.
 #define RESTOREBP stack[sp].index_value = bp;\
                   bp = stack[bp].index_value;\
                   stack[stack[sp].index_value]=stack[sp-1];\
-		  sp = stack[sp].index_value+1;  
+		  sp = stack[sp].index_value+1;
+
 
 /* Ce qui fait, dans l'ordre:
    1) sauvergarde de bp,
