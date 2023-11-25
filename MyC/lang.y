@@ -19,9 +19,14 @@ void yyerror (char* s) {
 
  int convert=1;//convert int to float
  int store=0;//STOREP
+ int num_cond=-1; //Numéro de condition
 
  int makeOffset(){
   return offset++;
+ }
+
+ int makeNumCond(){
+  return num_cond++;
  }
 
  
@@ -113,6 +118,9 @@ fun_head : ID PO PF            {
   if(strcmp($1, "main")==0){
     printf("void pcode_main(){\n");
   }
+  else{
+    printf("int comp_%s(){\n", $1);
+  }
   }
 
 | ID PO params PF              {
@@ -155,7 +163,7 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
-| ID                           {printf("//Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, $1,offset, depth);makeOffset();}
+| ID                           {printf("//Declare %s of type %d with offset %d at depth %d \nLOADI(0)\n\n", $1, $<type_value>1,offset, depth);makeOffset();}
 ;
 
 type
@@ -212,20 +220,20 @@ ret : RETURN  exp             {printf("return;\n}");}
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {}
+if bool_cond inst  elsop       {printf("End_%d\n", num_cond);printf("// Fin conditionelle %d\n", num_cond); num_cond--;}
 ;
 
 elsop : else inst              {}
 |                  %prec IFX   {} // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         {}
+bool_cond : PO exp PF         {printf("GTF \nIFN(False_%d) \n// la condition %d est vraie\n", num_cond, num_cond);}
 ;
 
-if : IF                       {}
+if : IF                       {makeNumCond();printf("// Debut conditionelle %d\n", num_cond);}
 ;
 
-else : ELSE                   {}
+else : ELSE                   {printf("GOTO(End_%d)\n",num_cond);printf("//la condition %d est fausse\n", num_cond);};
 ;
 
 // IV.4. Iterations
@@ -245,7 +253,7 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                {if($1==FLOAT || $3==FLOAT){
+| exp PLUS exp                {if(($1==FLOAT && $3==INT) || ($3==FLOAT && $1==INT)){
                                     if(convert==1){
                                       printf("I2F");
                                       convert++;
@@ -256,11 +264,14 @@ exp
                                     printf(" // converting second arg to float\nADDF \n", convert);
                                     $1==FLOAT;$3=FLOAT;
                                 }
+                                else if($1==FLOAT || $3==FLOAT){
+                                  printf("ADDF \n", convert);
+                                }
                                 else{
                                   printf("ADDI \n");
                                 }}
 | exp MOINS exp               {printf("MINUSI\n");}
-| exp STAR exp                {if($1==FLOAT || $3==FLOAT){
+| exp STAR exp                {if(($1==FLOAT && $3==INT) || ($3==FLOAT && $1==INT)){
                                     if(convert==1){
                                       printf("I2F");
                                       convert++;
@@ -271,12 +282,15 @@ exp
                                     printf(" // converting second arg to float\nMULTF \n", convert);
                                     $1==FLOAT;$3=FLOAT;
                                 }
+                                else if($1==FLOAT || $3==FLOAT){
+                                  printf("MULTF \n", convert);
+                                }
                                 else{
                                   printf("MULTI \n");
                                 }}
 | exp DIV exp                 {printf("DIVI\n");}
 | PO exp PF                   {}
-| ID                          {offset--;printf("LOADP(%d)\n", offset);}
+| ID                          {offset--;printf("LOADP(%d) // loading %s value\n", offset, $1);}
 | app                         {}
 | NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
