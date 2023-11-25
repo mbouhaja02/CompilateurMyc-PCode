@@ -11,8 +11,8 @@ LOADI(1)
 LOADF(2.200000)
 LOADI(3)
 I2F // converting second arg to float
-MULTF
+MULTF 
 I2F2 // converting first arg to float
-ADDF
+ADDF 
 return;
 }

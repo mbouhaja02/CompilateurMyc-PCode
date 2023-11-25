@@ -118,10 +118,10 @@ fun_head : ID PO PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   if(strcmp($1, "main")==0){
-    printf("void pcode_main(){\n");
+    printf("void pcode_main() {\n");
   }
   else{
-    printf("int comp_%s(){\n", $1);
+    printf("int comp_%s() {\n", $1);
   }
   }
 
@@ -268,8 +268,14 @@ exp
                                     else{
                                       printf("I2F%d", convert);
                                     }
-                                    printf(" // converting second arg to float\nADDF \n", convert);
-                                    $1==FLOAT;$3=FLOAT;
+                                    if($1==INT){
+                                      printf(" // converting first arg to float\nADDF \n", convert);
+                                      $3=FLOAT;
+                                    }
+                                    else{
+                                      printf(" // converting second arg to float\nADDF \n", convert);
+                                      $1==FLOAT;
+                                    }
                                 }
                                 else if($1==FLOAT || $3==FLOAT){
                                   printf("ADDF \n", convert);
@@ -286,8 +292,14 @@ exp
                                     else{
                                       printf("I2F%d", convert);
                                     }
-                                    printf(" // converting second arg to float\nMULTF \n", convert);
-                                    $1==FLOAT;$3=FLOAT;
+                                    if($1==INT){
+                                      printf(" // converting first arg to float\nMULTF \n", convert);
+                                      $3=FLOAT;
+                                    }
+                                    else{
+                                      printf(" // converting second arg to float\nMULTF \n", convert);
+                                      $1==FLOAT;
+                                    }
                                 }
                                 else if($1==FLOAT || $3==FLOAT){
                                   printf("MULTF \n", convert);
