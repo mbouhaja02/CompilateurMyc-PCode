@@ -6,13 +6,13 @@ pcode_main();
 return stack[sp-1].int_value;
 }
 
-//Declare x of type 789394272 with offset 0 at depth 0 
-LOADI(0)
+//Declare x of type float with offset 0 at depth 0 
+LOADI(0.0)
 
-//Declare y of type 789394336 with offset 1 at depth 0 
-LOADI(0)
+//Declare y of type float with offset 1 at depth 0 
+LOADI(0.0)
 
-//Declare z of type 789394400 with offset 2 at depth 0 
+//Declare z of type int with offset 2 at depth 0 
 LOADI(0)
 
 void pcode_main(){
@@ -22,6 +22,7 @@ LOADF(0.000000)
 GTF 
 IFN(False_0) 
 // la condition 0 est vraie
+SAVEBP // entering block
 // Debut conditionelle 1
 LOADP(1) // loading y value
 LOADF(0.000000)
@@ -36,8 +37,10 @@ LOADI(2)
 STOREP(1) // storing z value
 End_1
 // Fin conditionelle 1
+RESTOREBP // exiting block
 GOTO(End_0)
 //la condition 0 est fausse
+SAVEBP // entering block
 // Debut conditionelle 1
 LOADP(0) // loading y value
 LOADF(0.000000)
@@ -52,6 +55,7 @@ LOADI(4)
 STOREP(3) // storing z value
 End_1
 // Fin conditionelle 1
+RESTOREBP // exiting block
 End_0
 // Fin conditionelle 0
 LOADP(-1) // loading z value

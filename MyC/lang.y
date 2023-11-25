@@ -166,10 +166,10 @@ var_decl : type vlist          {}
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {if(type=="int"){
-                                  printf("//Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);makeOffset();
+                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);makeOffset();
                                 }
                                 else if(type=="float"){
-                                  printf("//Declare %s of type %s with offset %d at depth %d \nLOADI(0.0)\n\n", $1, type,offset, depth);makeOffset();
+                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0.0)\n\n", $1, type,offset, depth);makeOffset();
                                 }}
 ;
 

@@ -1,19 +1,20 @@
 #!/bin/bash
 
-if [ ${#num} -eq 1 ]; then
-    num="0$num"
-fi
-
 for num in {01..11}; do
-    echo "Comparaison des fichiers pour le numéro: $num"
+    # Format le numéro pour qu'il ait toujours deux chiffres
+    formatted_num=$(printf "%02d" $num)
 
+    echo "Comparaison des fichiers pour le numéro: $formatted_num"
 
-    if cmp -s "Examples/Ex${num}_pcode.c" "Correction/corr${num}.c"; then
-        echo "Les deux fichiers (Ex${num}_pcode.c et corr${num}.c) sont identiques."
+    file1="Examples/Ex${formatted_num}_pcode.c"
+    file2="Correction/corr${formatted_num}.c"
+
+    if cmp -s "$file1" "$file2"; then
+        echo "Les deux fichiers ($file1 et $file2) sont identiques."
     else
-        echo "Les fichiers (Ex${num}_pcode.c et corr${num}.c) sont différents."
+        echo "Les fichiers ($file1 et $file2) sont différents. Voici les différences :"
+        diff "$file1" "$file2"
     fi
 
-    echo "" 
+    echo ""  # Ligne vide pour une meilleure lisibilité entre les comparaisons
 done
-
