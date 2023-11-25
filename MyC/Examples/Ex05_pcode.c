@@ -14,6 +14,6 @@ LOADI(3)
 STOREP(0) // storing x value
 LOADI(1)
 LOADP(0) // loading x value
-ADDI 
+ADDI
 return;
 }
