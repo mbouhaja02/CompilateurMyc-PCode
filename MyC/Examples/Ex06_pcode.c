@@ -6,11 +6,11 @@ pcode_main();
 return stack[sp-1].int_value;
 }
 
-//Declare x of type 561808224 with offset 0 at depth 0 
+//Declare x of type int with offset 0 at depth 0 
 LOADI(0)
 
-//Declare y of type 561808288 with offset 1 at depth 0 
-LOADI(0)
+//Declare y of type float with offset 1 at depth 0 
+LOADI(0.0)
 
 void pcode_main(){
 LOADI(3)

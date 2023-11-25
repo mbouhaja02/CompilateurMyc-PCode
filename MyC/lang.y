@@ -21,6 +21,8 @@ void yyerror (char* s) {
  int store=0;//STOREP
  int num_cond=-1; //Numéro de condition
 
+ char* type;
+
  int makeOffset(){
   return offset++;
  }
@@ -163,11 +165,16 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
-| ID                           {printf("//Declare %s of type %d with offset %d at depth %d \nLOADI(0)\n\n", $1, $<type_value>1,offset, depth);makeOffset();}
+| ID                           {if(type=="int"){
+                                  printf("//Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);makeOffset();
+                                }
+                                else if(type=="float"){
+                                  printf("//Declare %s of type %s with offset %d at depth %d \nLOADI(0.0)\n\n", $1, type,offset, depth);makeOffset();
+                                }}
 ;
 
 type
-: typename                     {}
+: typename                     {type=type2string($1);}
 ;
 
 typename
