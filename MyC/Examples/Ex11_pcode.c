@@ -1,31 +1,30 @@
-// Header
+// PCode Header
 #include "PCode.h"
+
 int main() {
 pcode_main();
 return stack[sp-1].int_value;
 }
 
-void pcode_main() {
-// Declare x of type int with offset 1 at depth 1
+void pcode_main(){
+//Declare x of type int with offset 0 at depth 0 
 LOADI(0)
 
 LOADI(3)
-STOREP(bp + 1) // storing x value in current block
+STOREP(0) // storing x value
 SAVEBP // entering block
-// Declare y of type int with offset 1 at depth 2
+//Declare y of type int with offset 1 at depth 0 
 LOADI(0)
 
-LOADP(stack[bp]+1) // Loading x value one block above
-STOREP(bp + 1) // storing y value in current block
+LOADP(1) // loading x value
+STOREP(1) // storing y value
 SAVEBP // entering block
-// Declare z of type int with offset 1 at depth 3
+//Declare z of type int with offset 1 at depth 0 
 LOADI(0)
 
-LOADP(stack[stack[bp]]+1) // Loading x value two block above
-STOREP(bp + 1) // storing z value in current block
-// Removing variable z at depth 3
+LOADP(1) // loading x value
+STOREP(2) // storing z value
 RESTOREBP // exiting block
-// Removing variable y at depth 2
 RESTOREBP // exiting block
 LOADI(1)
 return;

@@ -203,10 +203,10 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       {}
+ao : AO                       {printf("SAVEBP // entering block\n");}
 ;
 
-af : AF                       {}
+af : AF                       {printf("RESTOREBP // exiting block\n");}
 ;
 
 
