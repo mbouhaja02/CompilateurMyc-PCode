@@ -10,7 +10,7 @@ return stack[sp-1].int_value;
 LOADI(0)
 
 // Declare y of type float with offset 1 at depth 0 
-LOADI(0.0)
+LOADF(0.0)
 
 void pcode_main() {
 LOADI(3)

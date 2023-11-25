@@ -169,7 +169,7 @@ vlist: vlist vir ID            {} // récursion gauche pour traiter les variable
                                   printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);makeOffset();
                                 }
                                 else if(type=="float"){
-                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0.0)\n\n", $1, type,offset, depth);makeOffset();
+                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);makeOffset();
                                 }}
 ;
 
@@ -270,11 +270,11 @@ exp
                                     }
                                     if($1==INT){
                                       printf(" // converting first arg to float\nADDF \n", convert);
-                                      $3=FLOAT;
+                                      $1=FLOAT;
                                     }
                                     else{
                                       printf(" // converting second arg to float\nADDF \n", convert);
-                                      $1==FLOAT;
+                                      $3==FLOAT;
                                     }
                                 }
                                 else if($1==FLOAT || $3==FLOAT){
@@ -294,11 +294,11 @@ exp
                                     }
                                     if($1==INT){
                                       printf(" // converting first arg to float\nMULTF \n", convert);
-                                      $3=FLOAT;
+                                      $1=FLOAT;
                                     }
                                     else{
                                       printf(" // converting second arg to float\nMULTF \n", convert);
-                                      $1==FLOAT;
+                                      $3==FLOAT;
                                     }
                                 }
                                 else if($1==FLOAT || $3==FLOAT){
@@ -309,7 +309,7 @@ exp
                                 }}
 | exp DIV exp                 {printf("DIVI\n");}
 | PO exp PF                   {}
-| ID                          {offset--;printf("LOADP(%d) // loading %s value\n", offset, $1);}
+| ID                          {if(type=="float"){$$=FLOAT;}else if(type=="int"){$$=INT;};offset--;printf("LOADP(%d) // loading %s value\n", offset, $1);}
 | app                         {}
 | NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
