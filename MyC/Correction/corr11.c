@@ -6,13 +6,6 @@ pcode_main();
 return stack[sp-1].int_value;
 }
 
-// Header
-#include "PCode.h"
-int main() {
-pcode_main();
-return stack[sp-1].int_value;
-}
-
 void pcode_main() {
 // Declare x of type int with offset 1 at depth 1
 LOADI(0)

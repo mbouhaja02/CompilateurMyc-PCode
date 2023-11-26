@@ -22,6 +22,18 @@ void yyerror (char* s) {
  int num_cond=-1; //Numéro de condition
  int NumWhile=-1; //Numéro de condition while
  int inside=0;// inside block
+ int insidemain=0;
+
+ void printStackAccess(int depth, char* res) {
+    strcpy(res, "stack");
+    for (int i = 1; i < depth; i++) {
+        strcat(res, "[stack");
+    }
+    strcat(res, "[bp]");
+    for (int i = 1; i < depth; i++) {
+        strcat(res, "]");
+    }
+}
 
  char* type;
  int typet;
@@ -109,7 +121,7 @@ char * type2string (int c) {
 prog : glob_decl_list              {}
 
 glob_decl_list : glob_decl_list fun {}
-| glob_decl_list decl PV       {}
+| glob_decl_list decl PV       {offset++;}
 |                              {} // empty glob_decl_list shall be forbidden, but usefull for offset computation
 
 // I. Functions
@@ -123,6 +135,7 @@ fun_head : ID PO PF            {
   if(strcmp($1, "main")==0){
     printf("void pcode_main() {\n");
     inside=1;
+    insidemain=1;
   }
   else{
     printf("int comp_%s() {\n", $1);
@@ -169,16 +182,18 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
-| ID                           {if(inside==1){
-                                  depth=1;
+| ID                           {depth=inside;
+                                if(insidemain==1){
+                                  makeOffset();
+                                  insidemain=0;
                                 }
                                 attribute r = makeSymbol(typet, offset, depth);
                                 r = set_symbol_value($1, r);
                                 if(type=="int"){
-                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);makeOffset();
+                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);
                                 }
                                 else if(type=="float"){
-                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);makeOffset();
+                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
                                 }}
 ;
 
@@ -212,10 +227,10 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       {printf("SAVEBP // entering block\n");}
+ao : AO                       {printf("SAVEBP // entering block\n"); inside++;}
 ;
 
-af : AF                       {printf("RESTOREBP // exiting block\n");}
+af : AF                       {printf("RESTOREBP // exiting block\n");inside--;}
 ;
 
 
@@ -226,7 +241,7 @@ aff : ID EQ exp               { attribute r = get_symbol_value($1);
                                   printf("STOREP(%d) // storing %s value\n", r->offset, $1);
                                 }
                                 else{
-                                  printf("STOREP(bp + %d) // storing %s value in current block\n", r->depth, $1);
+                                  printf("STOREP(bp + %d) // storing %s value in current block\n", r->offset, $1);
                                 }
                                 }
 ;
@@ -370,7 +385,15 @@ exp
                                 }}
 | PO exp PF                   {}
 | ID                          {attribute r = get_symbol_value($1);
-                              if(type2string(r->type)=="float"){$$=FLOAT;}else if(type2string(r->type)=="int"){$$=INT;};offset--;printf("LOADP(%d) // loading %s value\n", r->offset, $1);}
+                              if(type2string(r->type)=="float"){$$=FLOAT;}else if(type2string(r->type)=="int"){$$=INT;};
+                              if(r->depth==0){
+                                printf("LOADP(%d) // loading %s value\n", r->offset, $1);
+                              }
+                              else{
+                                char res[1000];
+                                printStackAccess(inside-1, res);
+                                printf("LOADP(%s+%d) // loading %s value\n", res, r->offset, $1);
+                              }}
 | app                         {}
 | NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
