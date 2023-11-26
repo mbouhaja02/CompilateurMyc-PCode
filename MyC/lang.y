@@ -22,6 +22,7 @@ void yyerror (char* s) {
  int num_cond=-1; //Numéro de condition
 
  char* type;
+ int typet;
 
  int makeOffset(){
   return offset++;
@@ -165,7 +166,9 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
-| ID                           {if(type=="int"){
+| ID                           {attribute r = makeSymbol(typet, offset, depth);
+                                r = set_symbol_value($1, r);
+                                if(type=="int"){
                                   printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);makeOffset();
                                 }
                                 else if(type=="float"){
@@ -174,7 +177,7 @@ vlist: vlist vir ID            {} // récursion gauche pour traiter les variable
 ;
 
 type
-: typename                     {type=type2string($1);}
+: typename                     {typet=$1;type=type2string($1);}
 ;
 
 typename
@@ -212,7 +215,8 @@ af : AF                       {printf("RESTOREBP // exiting block\n");}
 
 // IV.1 Affectations
 
-aff : ID EQ exp               {printf("STOREP(%d) // storing %s value\n", store, $1); store++;}
+aff : ID EQ exp               { attribute r = get_symbol_value($1);
+                                printf("STOREP(%d) // storing %s value\n", r->offset, $1);}
 ;
 
 
@@ -234,13 +238,13 @@ elsop : else inst              {}
 |                  %prec IFX   {} // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         {printf("GTF \nIFN(False_%d) \n// la condition %d est vraie\n", num_cond, num_cond);}
+bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vraie\n", num_cond, num_cond);}
 ;
 
 if : IF                       {makeNumCond();printf("// Debut conditionelle %d\n", num_cond);}
 ;
 
-else : ELSE                   {printf("GOTO(End_%d)\n",num_cond);printf("//la condition %d est fausse\n", num_cond);};
+else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",num_cond, num_cond);printf("//la condition %d est fausse\n", num_cond);};
 ;
 
 // IV.4. Iterations
@@ -309,7 +313,8 @@ exp
                                 }}
 | exp DIV exp                 {printf("DIVI\n");}
 | PO exp PF                   {}
-| ID                          {if(type=="float"){$$=FLOAT;}else if(type=="int"){$$=INT;};offset--;printf("LOADP(%d) // loading %s value\n", offset, $1);}
+| ID                          {attribute r = get_symbol_value($1);
+                              if(type2string(r->type)=="float"){$$=FLOAT;}else if(type2string(r->type)=="int"){$$=INT;};offset--;printf("LOADP(%d) // loading %s value\n", r->offset, $1);}
 | app                         {}
 | NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
@@ -317,13 +322,17 @@ exp
 
 // V.2. Booléens
 
-| NOT exp %prec UNA           {}
-| exp INF exp                 {}
-| exp SUP exp                 {}
-| exp EQUAL exp               {}
-| exp DIFF exp                {}
-| exp AND exp                 {}
-| exp OR exp                  {}
+| NOT exp %prec UNA           {printf("NOT\n");}
+| exp INF exp                 {if ($1==FLOAT || $3==FLOAT) {printf("LTF\n");}
+                              else {printf("LTI");}}
+| exp SUP exp                 {if ($1==FLOAT || $3==FLOAT) {printf("GTF\n");}
+                              else {printf("GTI");}}
+| exp EQUAL exp               {if ($1==FLOAT || $3==FLOAT) {printf("EQF\n");}
+                              else {printf("EQI");}}
+| exp DIFF exp                {if ($1==FLOAT || $3==FLOAT) {printf("NEQF\n");}
+                              else {printf("NEQI");}}
+| exp AND exp                 {printf("AND\n");}
+| exp OR exp                  {printf("OR\n");}
 
 ;
 
