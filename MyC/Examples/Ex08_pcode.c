@@ -43,21 +43,21 @@ GOTO(End_0)
 False_0
 //la condition 0 est fausse
 SAVEBP // entering block
-// Debut conditionelle 1
+// Debut conditionelle 2
 LOADP(1) // loading y value
 LOADF(0.000000)
 GTF
-IFN(False_1) 
-// la condition 1 est vraie
+IFN(False_2) 
+// la condition 2 est vraie
 LOADI(3)
 STOREP(2) // storing z value
-GOTO(End_1)
-False_1
-//la condition 1 est fausse
+GOTO(End_2)
+False_2
+//la condition 2 est fausse
 LOADI(4)
 STOREP(2) // storing z value
-End_1
-// Fin conditionelle 1
+End_2
+// Fin conditionelle 2
 RESTOREBP // exiting block
 End_0
 // Fin conditionelle 0
