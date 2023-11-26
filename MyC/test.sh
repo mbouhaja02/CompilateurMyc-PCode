@@ -1,13 +1,10 @@
 #!/bin/bash
 
 for num in {01..11}; do
-    # Format le numéro pour qu'il ait toujours deux chiffres
-    formatted_num=$(printf "%02d" $num)
+    echo "Comparaison des fichiers pour le numéro: $num"
 
-    echo "Comparaison des fichiers pour le numéro: $formatted_num"
-
-    file1="Examples/Ex${formatted_num}_pcode.c"
-    file2="Correction/corr${formatted_num}.c"
+    file1="Examples/Ex${num}_pcode.c"
+    file2="Correction/corr${num}.c"
 
     # Création de copies temporaires des fichiers sans les commentaires
     temp1=$(mktemp)

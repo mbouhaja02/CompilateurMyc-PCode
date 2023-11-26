@@ -20,6 +20,7 @@ void yyerror (char* s) {
  int convert=1;//convert int to float
  int store=0;//STOREP
  int num_cond=-1; //Numéro de condition
+ int NumWhile=-1; //Numéro de condition while
 
  char* type;
  int typet;
@@ -249,12 +250,12 @@ else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",num_cond, num_c
 
 // IV.4. Iterations
 
-loop : while while_cond inst  {}
+loop : while while_cond inst  {printf("GOTO(StartLoop_%d)\n//Fin boucle while %d\nEndLoop_%d:\n", NumWhile, NumWhile, NumWhile);NumWhile--;}
 ;
 
-while_cond : PO exp PF        {}
+while_cond : PO exp PF        {printf("IFN(EndLoop_%d)\n// Debut boucle while %d \n", NumWhile, NumWhile);}
 
-while : WHILE                 {}
+while : WHILE                 {NumWhile++;printf("StartLoop_%d: // chargement condition boucle while %d\n", NumWhile, NumWhile);}
 ;
 
 
@@ -287,7 +288,29 @@ exp
                                 else{
                                   printf("ADDI \n");
                                 }}
-| exp MOINS exp               {printf("MINUSI\n");}
+| exp MOINS exp               {if(($1==FLOAT && $3==INT) || ($3==FLOAT && $1==INT)){
+                                    if(convert==1){
+                                      printf("I2F");
+                                      convert++;
+                                    }
+                                    else{
+                                      printf("I2F%d", convert);
+                                    }
+                                    if($1==INT){
+                                      printf(" // converting first arg to float\nSUBF \n", convert);
+                                      $1=FLOAT;
+                                    }
+                                    else{
+                                      printf(" // converting second arg to float\nSUBF \n", convert);
+                                      $3==FLOAT;
+                                    }
+                                }
+                                else if($1==FLOAT || $3==FLOAT){
+                                  printf("SUBF \n", convert);
+                                }
+                                else{
+                                  printf("SUBI \n");
+                                }}
 | exp STAR exp                {if(($1==FLOAT && $3==INT) || ($3==FLOAT && $1==INT)){
                                     if(convert==1){
                                       printf("I2F");
@@ -311,7 +334,29 @@ exp
                                 else{
                                   printf("MULTI \n");
                                 }}
-| exp DIV exp                 {printf("DIVI\n");}
+| exp DIV exp                 {if(($1==FLOAT && $3==INT) || ($3==FLOAT && $1==INT)){
+                                    if(convert==1){
+                                      printf("I2F");
+                                      convert++;
+                                    }
+                                    else{
+                                      printf("I2F%d", convert);
+                                    }
+                                    if($1==INT){
+                                      printf(" // converting first arg to float\nDIVF \n", convert);
+                                      $1=FLOAT;
+                                    }
+                                    else{
+                                      printf(" // converting second arg to float\nDIVF \n", convert);
+                                      $3==FLOAT;
+                                    }
+                                }
+                                else if($1==FLOAT || $3==FLOAT){
+                                  printf("DIVF \n", convert);
+                                }
+                                else{
+                                  printf("DIVI \n");
+                                }}
 | PO exp PF                   {}
 | ID                          {attribute r = get_symbol_value($1);
                               if(type2string(r->type)=="float"){$$=FLOAT;}else if(type2string(r->type)=="int"){$$=INT;};offset--;printf("LOADP(%d) // loading %s value\n", r->offset, $1);}
@@ -324,13 +369,13 @@ exp
 
 | NOT exp %prec UNA           {printf("NOT\n");}
 | exp INF exp                 {if ($1==FLOAT || $3==FLOAT) {printf("LTF\n");}
-                              else {printf("LTI");}}
+                              else {printf("LTI\n");}}
 | exp SUP exp                 {if ($1==FLOAT || $3==FLOAT) {printf("GTF\n");}
-                              else {printf("GTI");}}
+                              else {printf("GTI\n");}}
 | exp EQUAL exp               {if ($1==FLOAT || $3==FLOAT) {printf("EQF\n");}
-                              else {printf("EQI");}}
+                              else {printf("EQI\n");}}
 | exp DIFF exp                {if ($1==FLOAT || $3==FLOAT) {printf("NEQF\n");}
-                              else {printf("NEQI");}}
+                              else {printf("NEQI\n");}}
 | exp AND exp                 {printf("AND\n");}
 | exp OR exp                  {printf("OR\n");}
 
