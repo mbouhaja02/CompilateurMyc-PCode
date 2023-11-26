@@ -36,7 +36,6 @@ False_1
 //la condition 1 est fausse
 LOADI(2)
 STOREP(2) // storing z value
-haanaaaaaa
 End_1
 // Fin conditionelle 1
 RESTOREBP // exiting block
@@ -57,11 +56,9 @@ False_1
 //la condition 1 est fausse
 LOADI(4)
 STOREP(2) // storing z value
-haanaaaaaa
 End_1
 // Fin conditionelle 1
 RESTOREBP // exiting block
-haanaaaaaa
 End_0
 // Fin conditionelle 0
 LOADP(2) // loading z value

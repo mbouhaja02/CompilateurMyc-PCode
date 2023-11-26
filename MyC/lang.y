@@ -21,6 +21,7 @@ void yyerror (char* s) {
  int store=0;//STOREP
  int num_cond=-1; //Numéro de condition
  int NumWhile=-1; //Numéro de condition while
+ int inside=0;// inside block
 
  char* type;
  int typet;
@@ -121,6 +122,7 @@ fun_head : ID PO PF            {
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   if(strcmp($1, "main")==0){
     printf("void pcode_main() {\n");
+    inside=1;
   }
   else{
     printf("int comp_%s() {\n", $1);
@@ -167,7 +169,10 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
-| ID                           {attribute r = makeSymbol(typet, offset, depth);
+| ID                           {if(inside==1){
+                                  depth=1;
+                                }
+                                attribute r = makeSymbol(typet, offset, depth);
                                 r = set_symbol_value($1, r);
                                 if(type=="int"){
                                   printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);makeOffset();
@@ -217,7 +222,13 @@ af : AF                       {printf("RESTOREBP // exiting block\n");}
 // IV.1 Affectations
 
 aff : ID EQ exp               { attribute r = get_symbol_value($1);
-                                printf("STOREP(%d) // storing %s value\n", r->offset, $1);}
+                                if(r->depth==0){
+                                  printf("STOREP(%d) // storing %s value\n", r->offset, $1);
+                                }
+                                else{
+                                  printf("STOREP(bp + %d) // storing %s value in current block\n", r->depth, $1);
+                                }
+                                }
 ;
 
 
@@ -274,16 +285,16 @@ exp
                                       printf("I2F%d", convert);
                                     }
                                     if($1==INT){
-                                      printf(" // converting first arg to float\nADDF \n", convert);
+                                      printf(" // converting first arg to float\nADDF \n");
                                       $1=FLOAT;
                                     }
                                     else{
-                                      printf(" // converting second arg to float\nADDF \n", convert);
+                                      printf(" // converting second arg to float\nADDF \n");
                                       $3==FLOAT;
                                     }
                                 }
                                 else if($1==FLOAT || $3==FLOAT){
-                                  printf("ADDF \n", convert);
+                                  printf("ADDF \n");
                                 }
                                 else{
                                   printf("ADDI \n");
@@ -297,16 +308,16 @@ exp
                                       printf("I2F%d", convert);
                                     }
                                     if($1==INT){
-                                      printf(" // converting first arg to float\nSUBF \n", convert);
+                                      printf(" // converting first arg to float\nSUBF \n");
                                       $1=FLOAT;
                                     }
                                     else{
-                                      printf(" // converting second arg to float\nSUBF \n", convert);
+                                      printf(" // converting second arg to float\nSUBF \n");
                                       $3==FLOAT;
                                     }
                                 }
                                 else if($1==FLOAT || $3==FLOAT){
-                                  printf("SUBF \n", convert);
+                                  printf("SUBF \n");
                                 }
                                 else{
                                   printf("SUBI \n");
@@ -320,16 +331,16 @@ exp
                                       printf("I2F%d", convert);
                                     }
                                     if($1==INT){
-                                      printf(" // converting first arg to float\nMULTF \n", convert);
+                                      printf(" // converting first arg to float\nMULTF \n");
                                       $1=FLOAT;
                                     }
                                     else{
-                                      printf(" // converting second arg to float\nMULTF \n", convert);
+                                      printf(" // converting second arg to float\nMULTF \n");
                                       $3==FLOAT;
                                     }
                                 }
                                 else if($1==FLOAT || $3==FLOAT){
-                                  printf("MULTF \n", convert);
+                                  printf("MULTF \n");
                                 }
                                 else{
                                   printf("MULTI \n");
@@ -343,16 +354,16 @@ exp
                                       printf("I2F%d", convert);
                                     }
                                     if($1==INT){
-                                      printf(" // converting first arg to float\nDIVF \n", convert);
+                                      printf(" // converting first arg to float\nDIVF \n");
                                       $1=FLOAT;
                                     }
                                     else{
-                                      printf(" // converting second arg to float\nDIVF \n", convert);
+                                      printf(" // converting second arg to float\nDIVF \n");
                                       $3==FLOAT;
                                     }
                                 }
                                 else if($1==FLOAT || $3==FLOAT){
-                                  printf("DIVF \n", convert);
+                                  printf("DIVF \n");
                                 }
                                 else{
                                   printf("DIVI \n");

@@ -1,7 +1,10 @@
 #!/bin/bash
 
+make
+
 for num in {01..11}; do
     echo "Comparaison des fichiers pour le numéro: $num"
+    ./run "Ex${num}"
 
     file1="Examples/Ex${num}_pcode.c"
     file2="Correction/corr${num}.c"
