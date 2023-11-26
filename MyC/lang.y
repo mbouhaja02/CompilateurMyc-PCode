@@ -42,12 +42,78 @@ void yyerror (char* s) {
   return offset++;
  }
 
- int makeNumCond(){
-  return num_cond++;
- }
+// int makeNumCond(){
+//  return num_cond++;
+// }
 
- 
- 
+// Define a node structure for the linked list
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Define a structure for the stack using linked list
+struct Stack {
+    struct Node* top;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(EXIT_FAILURE);
+    }
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+
+// Function to check if the stack is empty
+int isEmpty(struct Stack* stack) {
+    return (stack->top == NULL);
+}
+
+// Function to push an element onto the stack
+void push(struct Stack* stack, int data) {
+    struct Node* newNode = createNode(data);
+    newNode->next = stack->top;
+    stack->top = newNode;
+    //printf("%d pushed to stack.\n", data);
+}
+
+// Function to remove an element from the stack
+int pop(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty. Cannot pop from an empty stack.\n");
+        exit(EXIT_FAILURE);
+    }
+    struct Node* temp = stack->top;
+    int popped = temp->data;
+    stack->top = stack->top->next;
+    free(temp);
+    return popped;
+}
+
+int head(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty.\n");
+        exit(EXIT_FAILURE);
+    }
+    return stack->top->data;
+}
+
+struct cond {
+  int total;
+  struct Stack s;
+};
+
+struct cond myCond = {-1, {NULL} };
+//myCond->total = -1;
+//myCond->s = *createStack(); // Initialize the stack using createStack() function
+
+
 %}
 
 %union { 
@@ -258,20 +324,20 @@ ret : RETURN  exp             {printf("return;\n}");}
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {printf("End_%d\n", num_cond);printf("// Fin conditionelle %d\n", num_cond); num_cond--;}
+if bool_cond inst  elsop       {int done = pop(&myCond.s);printf("End_%d\n", done);printf("// Fin conditionelle %d\n", done);}
 ;
 
 elsop : else inst              {}
 |                  %prec IFX   {} // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vraie\n", num_cond, num_cond);}
+bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vraie\n", head(&myCond.s), head(&myCond.s));}
 ;
 
-if : IF                       {makeNumCond();printf("// Debut conditionelle %d\n", num_cond);}
+if : IF                       {myCond.total++;push(&myCond.s, myCond.total);printf("// Debut conditionelle %d\n", head(&myCond.s));}
 ;
 
-else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",num_cond, num_cond);printf("//la condition %d est fausse\n", num_cond);};
+else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",head(&myCond.s), head(&myCond.s));printf("//la condition %d est fausse\n", head(&myCond.s));};
 ;
 
 // IV.4. Iterations
