@@ -42,9 +42,6 @@ void yyerror (char* s) {
   return offset++;
  }
 
-// int makeNumCond(){
-//  return num_cond++;
-// }
 
 // Define a node structure for the linked list
 struct Node {
@@ -110,9 +107,6 @@ struct cond {
 };
 
 struct cond myCond = {-1, {NULL} };
-//myCond->total = -1;
-//myCond->s = *createStack(); // Initialize the stack using createStack() function
-
 
 %}
 
