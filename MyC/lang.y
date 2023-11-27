@@ -324,7 +324,7 @@ ret : RETURN  exp             {printf("return;\n}");}
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {int done = pop(&myCond.s);printf("End_%d\n", done);printf("// Fin conditionelle %d\n", done);}
+if bool_cond inst  elsop       {int done = pop(&myCond.s);printf("End_%d:\n", done);printf("// Fin conditionelle %d\n", done);}
 ;
 
 elsop : else inst              {}

@@ -28,3 +28,5 @@ for num in {01..11}; do
 
     echo ""  # Ligne vide pour une meilleure lisibilité entre les comparaisons
 done
+
+make clean
