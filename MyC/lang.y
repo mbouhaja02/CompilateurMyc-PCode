@@ -23,6 +23,7 @@ void yyerror (char* s) {
  int NumWhile=-1; //Numéro de condition while
  int inside=0;// inside block
  int insidemain=0;
+ int param_num=0; // number of paramaters
 
  void printStackAccess(int depth, char* res) {
     if (depth==0) {strcpy(res, "bp");}
@@ -143,11 +144,20 @@ fun_head : ID PO PF            {
 | ID PO params PF              {
    // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
+  inside =1;
+  printf("void pcode_%s() {\n", $1);
+  for(int i=1; i<(param_num+1); i++){
+    printf("// Argument  of function %s in TDS with offset -%d\n", $1, i );
+  }
  }
 ;
 
 params: type ID vir params     {} // récursion droite pour numéroter les paramètres du dernier au premier
-| type ID                      {}
+| type ID                      {param_num++;                            
+                                attribute r = makeSymbol(typet, -param_num, 1);
+                                sid sym = string_to_sid($2);
+                                r = set_symbol_value(sym, r);
+                                }
 
 
 vir : VIR                      {}
@@ -164,16 +174,7 @@ faf : AF                       {}
 
 // II. Block
 block:
-decl_list inst_list            {if (inside!=1){
-                                sid * symb = get_symb_id(inside);
-                                int i = 0;
-                                while (symb[i]) {
-                                  attribute r = get_symbol_value(symb[i]);
-                                  if (r->depth == inside){
-                                    printf("// Removing variable %s at depth %d\n", symb[i], inside);}
-                                  if (r->depth > 1) r->depth = r->depth - 1;
-                                  i++;
-                                }}}
+decl_list inst_list            {}
 ;
 
 // III. Declarations
@@ -259,7 +260,7 @@ aff : ID EQ exp               { sid sym = string_to_sid($1);
 
 
 // IV.2 Return
-ret : RETURN  exp             {printf("return;\n}");}
+ret : RETURN  exp             {printf("return;\n}\n");}
 | RETURN PO PF                {}
 ;
 
@@ -269,7 +270,7 @@ ret : RETURN  exp             {printf("return;\n}");}
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {int done = pop(&myCond.s);printf("End_%d:\n", done);printf("// Fin conditionelle %d\n", done);}
+if bool_cond inst  elsop       {inside=head(&myCond.s);int done = pop(&myCond.s);printf("End_%d:\n", done);printf("// Fin conditionelle %d\n", done);}
 ;
 
 elsop : else inst              {}
@@ -279,10 +280,10 @@ elsop : else inst              {}
 bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vraie\n", head(&myCond.s), head(&myCond.s));}
 ;
 
-if : IF                       {myCond.total++;push(&myCond.s, myCond.total);printf("// Debut conditionelle %d\n", head(&myCond.s));}
+if : IF                       {myCond.total++;push(&myCond.s, myCond.total);printf("// Debut conditionelle %d\n", head(&myCond.s));inside =head(&myCond.s);}
 ;
 
-else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",head(&myCond.s), head(&myCond.s));printf("//la condition %d est fausse\n", head(&myCond.s));};
+else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",head(&myCond.s), head(&myCond.s));printf("//la condition %d est fausse\n", head(&myCond.s));inside = head(&myCond.s);};
 ;
 
 // IV.4. Iterations
