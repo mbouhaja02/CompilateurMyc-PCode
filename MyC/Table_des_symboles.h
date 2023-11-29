@@ -44,4 +44,8 @@ attribute get_symbol_value(sid symb_id);
 /* add the symbol symb_id with given value */
 attribute set_symbol_value(sid symb_id,attribute value);
 
+/* gets symbol_ids from the block of depth inside */
+sid* get_symb_id(int inside);
+
+
 #endif

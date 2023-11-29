@@ -61,8 +61,11 @@ attribute get_symbol_value(sid symb_id) {
 	}
     
 	/* if not found does cause an error */
-	fprintf(stderr,"Error : symbol %s is not a valid defined symbol\n",(char *) symb_id);
-	exit(-1);
+	//fprintf(stderr,"Error : symbol %s is not a valid defined symbol\n",(char *) symb_id);
+	//exit(-1);
+
+	/* modified to fit usage */
+	return NULL;
 };
 
 /* add the symbol symb_id with given value */
@@ -75,5 +78,22 @@ attribute set_symbol_value(sid symb_id,attribute value) {
 	tracker -> next = storage;
 	storage = tracker;
 	return storage -> symbol_value;
+}
+
+/* gets symbol_ids from the block of depth "inside" */
+sid* get_symb_id(int inside) {
+	sid * symb_ids = malloc(inside*(sizeof(sid)));
+	elem * tracker=storage;
+
+	/* look into the linked list for elements of the block*/
+	int i = 0;
+	while (tracker) {
+		if (tracker -> symbol_value -> depth == inside) {
+			symb_ids[i] = tracker -> symbol_name;
+			i++;
+		} 
+		tracker = tracker -> next;
+	} 
+	return symb_ids;
 }
 
