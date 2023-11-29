@@ -164,16 +164,7 @@ faf : AF                       {}
 
 // II. Block
 block:
-decl_list inst_list            {if (inside!=1){
-                                sid * symb = get_symb_id(inside);
-                                int i = 0;
-                                while (symb[i]) {
-                                  attribute r = get_symbol_value(symb[i]);
-                                  if (r->depth == inside){
-                                    printf("// Removing variable %s at depth %d\n", symb[i], inside);}
-                                  if (r->depth > 1) r->depth = r->depth - 1;
-                                  i++;
-                                }}}
+decl_list inst_list            {}
 ;
 
 // III. Declarations

@@ -2,7 +2,7 @@
 
 make
 
-for num in {01..11}; do
+for num in {01..17}; do
     echo "Comparaison des fichiers pour le numéro: $num"
     ./run "Ex${num}"
 
