@@ -24,7 +24,10 @@ LOADI(0)
 
 LOADP(stack[stack[bp]]+1) // loading x value
 STOREP(bp + 1) // storing z value in current block
+// Removing variable z at depth 3
 RESTOREBP // exiting block
+// Removing variable z at depth 2
+// Removing variable y at depth 2
 RESTOREBP // exiting block
 LOADI(1)
 return;

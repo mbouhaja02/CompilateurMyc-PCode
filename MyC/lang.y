@@ -1,7 +1,7 @@
 %{
 
 #include "Table_des_symboles.h"
-
+#include "Table_des_conditions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,13 +25,15 @@ void yyerror (char* s) {
  int insidemain=0;
 
  void printStackAccess(int depth, char* res) {
-    strcpy(res, "stack");
+    if (depth==0) {strcpy(res, "bp");}
+    else{ strcpy(res, "stack");
     for (int i = 1; i < depth; i++) {
         strcat(res, "[stack");
     }
     strcat(res, "[bp]");
     for (int i = 1; i < depth; i++) {
         strcat(res, "]");
+    }
     }
 }
 
@@ -42,71 +44,7 @@ void yyerror (char* s) {
   return offset++;
  }
 
-
-// Define a node structure for the linked list
-struct Node {
-    int data;
-    struct Node* next;
-};
-
-// Define a structure for the stack using linked list
-struct Stack {
-    struct Node* top;
-};
-
-// Function to create a new node
-struct Node* createNode(int data) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    if (newNode == NULL) {
-        printf("Memory allocation failed!\n");
-        exit(EXIT_FAILURE);
-    }
-    newNode->data = data;
-    newNode->next = NULL;
-    return newNode;
-}
-
-
-// Function to check if the stack is empty
-int isEmpty(struct Stack* stack) {
-    return (stack->top == NULL);
-}
-
-// Function to push an element onto the stack
-void push(struct Stack* stack, int data) {
-    struct Node* newNode = createNode(data);
-    newNode->next = stack->top;
-    stack->top = newNode;
-    //printf("%d pushed to stack.\n", data);
-}
-
-// Function to remove an element from the stack
-int pop(struct Stack* stack) {
-    if (isEmpty(stack)) {
-        printf("Stack is empty. Cannot pop from an empty stack.\n");
-        exit(EXIT_FAILURE);
-    }
-    struct Node* temp = stack->top;
-    int popped = temp->data;
-    stack->top = stack->top->next;
-    free(temp);
-    return popped;
-}
-
-int head(struct Stack* stack) {
-    if (isEmpty(stack)) {
-        printf("Stack is empty.\n");
-        exit(EXIT_FAILURE);
-    }
-    return stack->top->data;
-}
-
-struct cond {
-  int total;
-  struct Stack s;
-};
-
-struct cond myCond = {-1, {NULL} };
+struct cond myCond = { -1, {NULL} };
 
 %}
 
@@ -226,7 +164,15 @@ faf : AF                       {}
 
 // II. Block
 block:
-decl_list inst_list            {}
+decl_list inst_list            {if (inside!=1){
+                                sid * symb = get_symb_id(inside);
+                                int i = 0;
+                                while (symb[i]) {
+                                  attribute r = get_symbol_value(symb[i]);
+                                  if (r->depth > 1) r->depth = r->depth - 1;
+                                  printf("// Removing variable %s at depth %d\n", symb[i], inside);
+                                  i++;
+                                }}}
 ;
 
 // III. Declarations
@@ -301,7 +247,9 @@ aff : ID EQ exp               { attribute r = get_symbol_value($1);
                                   printf("STOREP(%d) // storing %s value\n", r->offset, $1);
                                 }
                                 else{
-                                  printf("STOREP(bp + %d) // storing %s value in current block\n", r->offset, $1);
+                                  char res[1000];
+                                  printStackAccess(inside - r->depth, res);
+                                  printf("STOREP(%s + %d) // storing %s value in current block\n", res, r->offset, $1);
                                 }
                                 }
 ;
@@ -451,7 +399,7 @@ exp
                               }
                               else{
                                 char res[1000];
-                                printStackAccess(inside-1, res);
+                                printStackAccess(inside - r->depth, res);
                                 printf("LOADP(%s+%d) // loading %s value\n", res, r->offset, $1);
                               }}
 | app                         {}
