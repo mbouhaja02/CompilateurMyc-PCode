@@ -27,7 +27,6 @@ STOREP(bp + 1) // storing x value in current block
 // Removing variable x at depth 3
 RESTOREBP // exiting block
 // Removing variable x at depth 2
-// Removing variable x at depth 2
 RESTOREBP // exiting block
 LOADI(1)
 return;

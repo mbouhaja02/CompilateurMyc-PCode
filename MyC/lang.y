@@ -169,8 +169,9 @@ decl_list inst_list            {if (inside!=1){
                                 int i = 0;
                                 while (symb[i]) {
                                   attribute r = get_symbol_value(symb[i]);
+                                  if (r->depth == inside){
+                                    printf("// Removing variable %s at depth %d\n", symb[i], inside);}
                                   if (r->depth > 1) r->depth = r->depth - 1;
-                                  printf("// Removing variable %s at depth %d\n", symb[i], inside);
                                   i++;
                                 }}}
 ;
@@ -194,7 +195,8 @@ vlist: vlist vir ID            {} // récursion gauche pour traiter les variable
                                   insidemain=0;
                                 }
                                 attribute r = makeSymbol(typet, offset, depth);
-                                r = set_symbol_value($1, r);
+                                sid sym = string_to_sid($1);
+                                r = set_symbol_value(sym, r);
                                 if(type=="int"){
                                   printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);
                                 }
@@ -242,7 +244,8 @@ af : AF                       {printf("RESTOREBP // exiting block\n");inside--;}
 
 // IV.1 Affectations
 
-aff : ID EQ exp               { attribute r = get_symbol_value($1);
+aff : ID EQ exp               { sid sym = string_to_sid($1);
+                                attribute r = get_symbol_value(sym);
                                 if(r->depth==0){
                                   printf("STOREP(%d) // storing %s value\n", r->offset, $1);
                                 }

@@ -32,7 +32,6 @@ RESTOREBP // exiting block
 LOADP(bp+1) // loading x value
 STOREP(stack[bp] + 1) // storing y value in current block
 // Removing variable x at depth 2
-// Removing variable x at depth 2
 RESTOREBP // exiting block
 LOADP(bp+1) // loading x value
 STOREP(bp + 1) // storing y value in current block
