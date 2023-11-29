@@ -136,18 +136,17 @@ fun_head : ID PO PF            {
     inside=1;
     insidemain=1;
   }
-  else{
-    printf("int comp_%s() {\n", $1);
-  }
   }
 
 | ID PO params PF              {
    // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
-  inside =1;
-  printf("void pcode_%s() {\n", $1);
-  for(int i=1; i<(param_num+1); i++){
-    printf("// Argument  of function %s in TDS with offset -%d\n", $1, i );
+  else if(strcmp($1, "main")!=0){
+    inside =1;
+    printf("void pcode_%s() {\n", $1);
+    for(int i=1; i<(param_num+1); i++){
+      printf("// Argument  of function %s in TDS with offset -%d\n", $1, i );
+    }
   }
  }
 ;
@@ -261,7 +260,7 @@ aff : ID EQ exp               { sid sym = string_to_sid($1);
 
 // IV.2 Return
 ret : RETURN  exp             {printf("return;\n}\n");}
-| RETURN PO PF                {}
+| RETURN PO PF                {printf("headnaaaaaa\n");}
 ;
 
 // IV.3. Conditionelles
@@ -431,9 +430,8 @@ exp
 
 
 app : fid PO args PF          {}
-;
 
-fid : ID                      {}
+fid : ID                      {printf("// loading function %s arguments\n", $1);}
 
 args :  arglist               {}
 |                             {}
