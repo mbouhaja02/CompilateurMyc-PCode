@@ -27,13 +27,11 @@ LOADI(0)
 
 LOADI(5)
 STOREP(bp + 1) // storing x value in current block
-// Removing variable x at depth 3
 RESTOREBP // exiting block
-LOADP(bp+1) // loading x value
+LOADP(stack[bp]+1) // loading x value
 STOREP(stack[bp] + 1) // storing y value in current block
-// Removing variable x at depth 2
 RESTOREBP // exiting block
-LOADP(bp+1) // loading x value
+LOADP(stack[bp]+1) // loading x value
 STOREP(bp + 1) // storing y value in current block
 LOADP(bp+1) // loading y value
 return;
