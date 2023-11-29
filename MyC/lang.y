@@ -1,7 +1,7 @@
 %{
 
 #include "Table_des_symboles.h"
-#include "Table_des_conditions.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,8 +44,6 @@ void yyerror (char* s) {
  int makeOffset(){
   return offset++;
  }
-
-struct cond myCond = { -1, {NULL} };
 
 %}
 
@@ -260,7 +258,7 @@ aff : ID EQ exp               { sid sym = string_to_sid($1);
 
 // IV.2 Return
 ret : RETURN  exp             {printf("return;\n}\n");}
-| RETURN PO PF                {}
+| RETURN PO PF                {printf("headnaaaaaa\n");}
 ;
 
 // IV.3. Conditionelles
@@ -269,20 +267,20 @@ ret : RETURN  exp             {printf("return;\n}\n");}
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {inside=head(&myCond.s);int done = pop(&myCond.s);printf("End_%d:\n", done);printf("// Fin conditionelle %d\n", done);}
+if bool_cond inst  elsop       {printf("End_%d:\n", $<label_value>0);printf("// Fin conditionelle %d\n", $<label_value>0);}
 ;
 
 elsop : else inst              {}
 |                  %prec IFX   {} // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vraie\n", head(&myCond.s), head(&myCond.s));}
+bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vraie\n", num_cond, num_cond);}
 ;
 
-if : IF                       {myCond.total++;push(&myCond.s, myCond.total);printf("// Debut conditionelle %d\n", head(&myCond.s));inside =head(&myCond.s);}
+if : IF                       {num_cond++;$<label_value>0=num_cond;printf("// Debut conditionelle %d\n", $<label_value>0);}
 ;
 
-else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",head(&myCond.s), head(&myCond.s));printf("//la condition %d est fausse\n", head(&myCond.s));inside = head(&myCond.s);};
+else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",$<label_value>-3, $<label_value>-3);printf("//la condition %d est fausse\n", $<label_value>-3);};
 ;
 
 // IV.4. Iterations
@@ -405,7 +403,7 @@ exp
                                 printStackAccess(inside - r->depth, res);
                                 printf("LOADP(%s+%d) // loading %s value\n", res, r->offset, $1);
                               }}
-| app                         {printf("ENDCALL(%d) // unloading %d args of function\n", param_num, param_num);}
+| app                         {}
 | NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
 
@@ -429,16 +427,16 @@ exp
 // V.3 Applications de fonctions
 
 
-app : fid PO args PF          {printf("RESTOREBP \n");}
+app : fid PO args PF          {}
 
 fid : ID                      {printf("// loading function %s arguments\n", $1);}
 
-args :  arglist               {printf("CALL(pcode_plusUn) \n");}
-|                             {printf("SAVEBP \n");}
+args :  arglist               {}
+|                             {}
 ;
 
 arglist : arglist VIR exp     {} // récursion gauche pour empiler les arguements de la fonction de gauche à droite
-| exp                         {printf("SAVEBP \n");}
+| exp                         {}
 ;
 
 
