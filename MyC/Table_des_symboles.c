@@ -61,11 +61,8 @@ attribute get_symbol_value(sid symb_id) {
 	}
     
 	/* if not found does cause an error */
-	//fprintf(stderr,"Error : symbol %s is not a valid defined symbol\n",(char *) symb_id);
-	//exit(-1);
-
-	/* modified to fit usage */
-	return NULL;
+	fprintf(stderr,"Error : symbol %s is not a valid defined symbol\n",(char *) symb_id);
+	exit(-1);
 };
 
 /* add the symbol symb_id with given value */
@@ -80,20 +77,31 @@ attribute set_symbol_value(sid symb_id,attribute value) {
 	return storage -> symbol_value;
 }
 
-/* gets symbol_ids from the block of depth "inside" */
-sid* get_symb_id(int inside) {
-	sid * symb_ids = malloc(inside*(sizeof(sid)));
-	elem * tracker=storage;
+/* removes all symbols within given depth */
+void remove_symbols(int depth) {
+    elem *current = storage;
+    elem *previous = NULL;
 
-	/* look into the linked list for elements of the block*/
-	int i = 0;
-	while (tracker) {
-		if (tracker -> symbol_value -> depth == inside) {
-			symb_ids[i] = tracker -> symbol_name;
-			i++;
-		} 
-		tracker = tracker -> next;
-	} 
-	return symb_ids;
+    while (current != NULL) {
+        if (current->symbol_value->depth == depth) {
+            elem *next_elem = current->next;
+            if (depth > 1) {
+                printf("// Removing variable %s at depth %d\n", current->symbol_name, depth);
+            }
+            free(storage->symbol_value);
+            free(storage);
+            
+            if (previous != NULL) {
+                previous->next = next_elem;
+            } else {
+                storage = next_elem; // Update storage if the first element is removed
+            }
+            current = next_elem;
+        } else {
+            previous = current;
+            current = current->next;
+        }
+    }
 }
+
 

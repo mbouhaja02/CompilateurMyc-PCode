@@ -14,12 +14,14 @@ void yyerror (char* s) {
   exit(0);
   }
 		
+//----------- Tracker variables 
+ int num_cond=-1; //Numéro de condition
+
  int depth=0; // block depth
  int offset=0; // block offset
 
  int convert=1;//convert int to float
  int store=0;//STOREP
- int num_cond=-1; //Numéro de condition
  int NumWhile=-1; //Numéro de condition while
  int inside=0;// inside block
  int insidemain=0;
@@ -194,7 +196,7 @@ vlist: vlist vir ID            {} // récursion gauche pour traiter les variable
                                 }
                                 attribute r = makeSymbol(typet, offset, depth);
                                 sid sym = string_to_sid($1);
-                                r = set_symbol_value(sym, r);
+                                $<symbol_value>0 = set_symbol_value(sym, r);
                                 if(type=="int"){
                                   printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);
                                 }
@@ -236,7 +238,7 @@ ao block af                   {}
 ao : AO                       {printf("SAVEBP // entering block\n"); inside++;}
 ;
 
-af : AF                       {printf("RESTOREBP // exiting block\n");inside--;}
+af : AF                       {if (inside>1) {remove_symbols(inside);};printf("RESTOREBP // exiting block\n");inside--;}
 ;
 
 
@@ -267,7 +269,7 @@ ret : RETURN  exp             {printf("return;\n}\n");}
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {printf("End_%d:\n", $<label_value>0);printf("// Fin conditionelle %d\n", $<label_value>0);}
+if bool_cond inst  elsop       {printf("End_%d:\n", $<label_value>0);printf("// Fin conditionelle %d\n", $<label_value>0);inside--;}
 ;
 
 elsop : else inst              {}
@@ -277,7 +279,7 @@ elsop : else inst              {}
 bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vraie\n", num_cond, num_cond);}
 ;
 
-if : IF                       {num_cond++;$<label_value>0=num_cond;printf("// Debut conditionelle %d\n", $<label_value>0);}
+if : IF                       {inside++;num_cond++;$<label_value>0=num_cond;printf("// Debut conditionelle %d\n", $<label_value>0);}
 ;
 
 else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",$<label_value>-3, $<label_value>-3);printf("//la condition %d est fausse\n", $<label_value>-3);};
