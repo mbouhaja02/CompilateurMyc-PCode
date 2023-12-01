@@ -25,6 +25,10 @@ LOADP(stack[bp]+-1) // loading x value
 LOADP(stack[bp]+-1) // loading x value
 LOADI(1)
 SUBI 
+SAVEBP 
+CALL(pcode_fact) 
+RESTOREBP 
+ENDCALL(1)  // unloading 1 args of function plusUn
 MULTI 
 return;
 }
@@ -33,5 +37,9 @@ End_0:
 void pcode_main() {
 // loading function fact arguments
 LOADI(5)
+SAVEBP 
+CALL(pcode_fact) 
+RESTOREBP 
+ENDCALL(1)  // unloading 1 args of function plusUn
 return;
 }

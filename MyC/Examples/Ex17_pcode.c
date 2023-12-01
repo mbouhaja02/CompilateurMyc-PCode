@@ -14,5 +14,9 @@ return;
 void pcode_main() {
 // loading function castToFloat arguments
 LOADI(1)
+SAVEBP 
+CALL(pcode_castToFloat) 
+RESTOREBP 
+ENDCALL(1)  // unloading 1 args of function plusUn
 return;
 }

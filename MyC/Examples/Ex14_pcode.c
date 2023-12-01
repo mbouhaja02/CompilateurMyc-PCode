@@ -16,5 +16,9 @@ return;
 void pcode_main() {
 // loading function plusUn arguments
 LOADI(1)
+SAVEBP 
+CALL(pcode_plusUn) 
+RESTOREBP 
+ENDCALL(1)  // unloading 1 args of function plusUn
 return;
 }

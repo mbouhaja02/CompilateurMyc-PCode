@@ -27,6 +27,8 @@ void yyerror (char* s) {
  int insidemain=0;
  int param_num=0; // number of paramaters
 
+ char* id;
+
  void printStackAccess(int depth, char* res) {
     if (depth==0) {strcpy(res, "bp");}
     else{ strcpy(res, "stack");
@@ -144,7 +146,7 @@ fun_head : ID PO PF            {
   else if(strcmp($1, "main")!=0){
     inside =1;
     printf("void pcode_%s() {\n", $1);
-    for(int i=1; i<(param_num+1); i++){
+    for(int i=1; i<=(param_num); i++){
       printf("// Argument  of function %s in TDS with offset -%d\n", $1, i );
     }
   }
@@ -159,7 +161,7 @@ params: type ID vir params     {} // récursion droite pour numéroter les param
                                 }
 
 
-vir : VIR                      {}
+vir : VIR                      {param_num++; }
 ;
 
 fun_body : fao block faf       {}
@@ -260,7 +262,7 @@ aff : ID EQ exp               { sid sym = string_to_sid($1);
 
 // IV.2 Return
 ret : RETURN  exp             {printf("return;\n}\n");}
-| RETURN PO PF                {printf("headnaaaaaa\n");}
+| RETURN PO PF                {}
 ;
 
 // IV.3. Conditionelles
@@ -405,7 +407,7 @@ exp
                                 printStackAccess(inside - r->depth, res);
                                 printf("LOADP(%s+%d) // loading %s value\n", res, r->offset, $1);
                               }}
-| app                         {}
+| app                         {printf("ENDCALL(%d)  // unloading %d args of function plusUn\n", param_num, param_num);}
 | NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
 
@@ -429,16 +431,16 @@ exp
 // V.3 Applications de fonctions
 
 
-app : fid PO args PF          {}
+app : fid PO args PF          {printf("RESTOREBP \n");}
 
-fid : ID                      {printf("// loading function %s arguments\n", $1);}
+fid : ID                      {id=$1;printf("// loading function %s arguments\n", $1);}
 
-args :  arglist               {}
+args :  arglist               {printf("CALL(pcode_%s) \n", id);}
 |                             {}
 ;
 
 arglist : arglist VIR exp     {} // récursion gauche pour empiler les arguements de la fonction de gauche à droite
-| exp                         {}
+| exp                         {printf("SAVEBP \n");}
 ;
 
 
