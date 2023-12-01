@@ -11,16 +11,16 @@ void pcode_plus() {
 // Argument x of function plus in TDS with offset -2
 LOADP(bp+-2) // Loading x value in curent block
 LOADP(bp+-1) // Loading y value in curent block
-ADDI
+ADDI 
 return;
 }
 void pcode_main() {
 // loading function plus arguments
 LOADI(5)
 LOADI(6)
-SAVEBP
-CALL(pcode_plus)
-RESTOREBP
-ENDCALL(2) // unloading 2 args of function plus
+SAVEBP 
+CALL(pcode_plus) 
+RESTOREBP 
+ENDCALL(2)  // unloading 2 args of function plusUn
 return;
 }

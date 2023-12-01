@@ -146,22 +146,27 @@ fun_head : ID PO PF            {
   else if(strcmp($1, "main")!=0){
     inside =1;
     printf("void pcode_%s() {\n", $1);
-    for(int i=1; i<=(param_num); i++){
+    for(int i=1; i<(param_num+1); i++){
       printf("// Argument  of function %s in TDS with offset -%d\n", $1, i );
     }
   }
  }
 ;
 
-params: type ID vir params     {} // récursion droite pour numéroter les paramètres du dernier au premier
-| type ID                      {param_num++;                            
+params: type ID vir params     {param_num++;                      
+                                attribute r = makeSymbol(typet, -param_num, 1);
+                                sid sym = string_to_sid($2);
+                                r = set_symbol_value(sym, r);}
+                                 // récursion droite pour numéroter les paramètres du dernier au premier
+
+| type ID                      {param_num++;                           
                                 attribute r = makeSymbol(typet, -param_num, 1);
                                 sid sym = string_to_sid($2);
                                 r = set_symbol_value(sym, r);
                                 }
 
 
-vir : VIR                      {param_num++; }
+vir : VIR                      {}
 ;
 
 fun_body : fao block faf       {}
@@ -262,7 +267,7 @@ aff : ID EQ exp               { sid sym = string_to_sid($1);
 
 // IV.2 Return
 ret : RETURN  exp             {if(inside>1){printf("return;\n");}else{printf("return;\n}\n");}}
-| RETURN PO PF                {}
+| RETURN PO PF cond               {printf("}\n");}
 ;
 
 // IV.3. Conditionelles
@@ -439,8 +444,8 @@ args :  arglist               {printf("CALL(pcode_%s) \n", id);}
 |                             {}
 ;
 
-arglist : arglist VIR exp     {} // récursion gauche pour empiler les arguements de la fonction de gauche à droite
-| exp                         {printf("SAVEBP \n");}
+arglist : arglist VIR exp     {printf("SAVEBP \n");} // récursion gauche pour empiler les arguements de la fonction de gauche à droite
+| exp                         {if(param_num==1)printf("SAVEBP \n");}
 ;
 
 
