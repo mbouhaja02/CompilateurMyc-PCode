@@ -16,7 +16,6 @@ IFN(False_0)
 // la condition 0 est vraie
 LOADI(1)
 return;
-}
 GOTO(End_0)
 False_0
 //la condition 0 est fausse
@@ -31,9 +30,9 @@ RESTOREBP
 ENDCALL(1)  // unloading 1 args of function fact
 MULTI 
 return;
-}
 End_0:
 // Fin conditionelle 0
+}
 void pcode_main() {
 // loading function fact arguments
 LOADI(5)

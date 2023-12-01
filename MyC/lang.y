@@ -175,7 +175,7 @@ fun_body : fao block faf       {}
 
 fao : AO                       {}
 ;
-faf : AF                       {}
+faf : AF                       {printf("}\n");}
 ;
 
 
@@ -267,8 +267,8 @@ aff : ID EQ exp               { sid sym = string_to_sid($1);
 
 
 // IV.2 Return
-ret : RETURN  exp             {if(inside>1){printf("return;\n");}else{printf("return;\n}\n");}}
-| RETURN PO PF cond               {printf("}\n");}
+ret : RETURN  exp             {printf("return;\n");}
+| RETURN PO PF               {}
 ;
 
 // IV.3. Conditionelles
