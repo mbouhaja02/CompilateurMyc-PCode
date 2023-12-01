@@ -28,7 +28,7 @@ SUBI
 SAVEBP 
 CALL(pcode_fact) 
 RESTOREBP 
-ENDCALL(1)  // unloading 1 args of function plusUn
+ENDCALL(1)  // unloading 1 args of function fact
 MULTI 
 return;
 }
@@ -40,6 +40,6 @@ LOADI(5)
 SAVEBP 
 CALL(pcode_fact) 
 RESTOREBP 
-ENDCALL(1)  // unloading 1 args of function plusUn
+ENDCALL(1)  // unloading 1 args of function fact
 return;
 }

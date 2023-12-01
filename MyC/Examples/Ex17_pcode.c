@@ -17,6 +17,6 @@ LOADI(1)
 SAVEBP 
 CALL(pcode_castToFloat) 
 RESTOREBP 
-ENDCALL(1)  // unloading 1 args of function plusUn
+ENDCALL(1)  // unloading 1 args of function castToFloat
 return;
 }

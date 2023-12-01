@@ -44,6 +44,7 @@ void yyerror (char* s) {
 
  char* type;
  int typet;
+ int bdl;
 
  int makeOffset(){
   return offset++;
@@ -412,7 +413,7 @@ exp
                                 printStackAccess(inside - r->depth, res);
                                 printf("LOADP(%s+%d) // loading %s value\n", res, r->offset, $1);
                               }}
-| app                         {printf("ENDCALL(%d)  // unloading %d args of function plusUn\n", param_num, param_num);}
+| app                         {printf("ENDCALL(%d)  // unloading %d args of function %s\n", param_num, param_num, id);}
 | NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
 

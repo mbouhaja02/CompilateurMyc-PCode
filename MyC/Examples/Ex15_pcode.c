@@ -21,6 +21,6 @@ LOADI(6)
 SAVEBP 
 CALL(pcode_plus) 
 RESTOREBP 
-ENDCALL(2)  // unloading 2 args of function plusUn
+ENDCALL(2)  // unloading 2 args of function plus
 return;
 }
