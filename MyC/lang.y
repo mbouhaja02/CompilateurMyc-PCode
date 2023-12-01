@@ -261,7 +261,7 @@ aff : ID EQ exp               { sid sym = string_to_sid($1);
 
 
 // IV.2 Return
-ret : RETURN  exp             {printf("return;\n}\n");}
+ret : RETURN  exp             {if(inside>1){printf("return;\n");}else{printf("return;\n}\n");}}
 | RETURN PO PF                {}
 ;
 
@@ -281,7 +281,7 @@ elsop : else inst              {}
 bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vraie\n", num_cond, num_cond);}
 ;
 
-if : IF                       {inside++;num_cond++;$<label_value>0=num_cond;printf("// Debut conditionelle %d\n", $<label_value>0);}
+if : IF                       {num_cond++;$<label_value>0=num_cond;printf("// Debut conditionelle %d\n", $<label_value>0);}
 ;
 
 else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",$<label_value>-3, $<label_value>-3);printf("//la condition %d est fausse\n", $<label_value>-3);};
