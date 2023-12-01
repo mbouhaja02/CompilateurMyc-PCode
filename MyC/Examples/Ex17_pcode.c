@@ -14,6 +14,7 @@ return;
 void pcode_main() {
 // loading function castToFloat arguments
 LOADI(1)
+I2F
 SAVEBP 
 CALL(pcode_castToFloat) 
 RESTOREBP 

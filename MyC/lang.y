@@ -45,6 +45,22 @@ void yyerror (char* s) {
  char* type;
  int typet;
  int bdl;
+ int tab[10];
+
+ void imprimerTableau(int tableau[], int taille) {
+    for (int i = 0; i < taille; i++) {
+        printf("%d\n", tableau[i]);
+    }
+}
+
+int comparerValeur(int tableau[], int taille, int valeur) {
+    for (int i = 0; i < taille; i++) {
+        if (tableau[i] != valeur) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
  int makeOffset(){
   return offset++;
@@ -154,13 +170,15 @@ fun_head : ID PO PF            {
  }
 ;
 
-params: type ID vir params     {param_num++;                      
+params: type ID vir params     {tab[param_num]=typet;
+                                param_num++;                      
                                 attribute r = makeSymbol(typet, -param_num, 1);
                                 sid sym = string_to_sid($2);
                                 r = set_symbol_value(sym, r);}
                                  // récursion droite pour numéroter les paramètres du dernier au premier
 
-| type ID                      {param_num++;                           
+| type ID                      {tab[param_num]=typet;
+                                param_num++;                           
                                 attribute r = makeSymbol(typet, -param_num, 1);
                                 sid sym = string_to_sid($2);
                                 r = set_symbol_value(sym, r);
@@ -414,7 +432,7 @@ exp
                                 printf("LOADP(%s+%d) // loading %s value\n", res, r->offset, $1);
                               }}
 | app                         {printf("ENDCALL(%d)  // unloading %d args of function %s\n", param_num, param_num, id);}
-| NUM                         {printf("LOADI(%d)\n", $1); $$=INT;}
+| NUM                         {printf("LOADI(%d)\n", $1); $$=INT;if(comparerValeur(tab, param_num, typet)==1){printf("I2F\n");};}
 | DEC                         {printf("LOADF(%f)\n", $1); $$=FLOAT;}
 
 
