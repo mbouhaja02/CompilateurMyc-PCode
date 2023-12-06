@@ -1,10 +1,6 @@
 // PCode Header
-#include "PCode.h"
+#include "../PCode/PCode.h"
 
-int main() {
-pcode_main();
-return stack[sp-1].int_value;
-}
 
 // Declare x of type float with offset 0 at depth 0 
 LOADF(0.0)
@@ -30,4 +26,12 @@ End_0:
 // Fin conditionelle 0
 LOADP(1) // loading y value
 return;
+// Removing variable y at depth 0
+// Removing variable x at depth 0
+// Exiting function block, removing loc var and arg from TDS
 }
+int main() {
+pcode_main();
+return stack[sp-1].int_value;
+}
+

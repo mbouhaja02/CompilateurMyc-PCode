@@ -85,9 +85,9 @@ void remove_symbols(int depth) {
     while (current != NULL) {
         if (current->symbol_value->depth == depth) {
             elem *next_elem = current->next;
-            if (depth > 1) {
-                printf("// Removing variable %s at depth %d\n", current->symbol_name, depth);
-            }
+        
+            printf("// Removing variable %s at depth %d\n", current->symbol_name, depth);
+            
             free(storage->symbol_value);
             free(storage);
             

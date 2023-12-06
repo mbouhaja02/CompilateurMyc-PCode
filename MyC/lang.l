@@ -28,6 +28,8 @@
 ")"                      { return PF;}
 "{"                      { return AO;}
 "}"                      { return AF;}
+"["                      { return CO;}
+"]"                      { return CO;}
 
 "int"                    { return INT;}
 "float"                  { return FLOAT;}

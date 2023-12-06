@@ -85,7 +85,7 @@ int comparerValeur(int tableau[], int taille, int valeur) {
 %token INT FLOAT VOID
 
 %token <string_value> ID
-%token AO AF PO PF PV VIR
+%token AO AF PO PF PV CO CF VIR
 %token RETURN  EQ
 %token <label_value> IF ELSE WHILE
 
@@ -193,7 +193,7 @@ fun_body : fao block faf       {}
 
 fao : AO                       {}
 ;
-faf : AF                       {printf("}\n");}
+faf : AF                       {remove_symbols(inside);printf("// Exiting function block, removing loc var and arg from TDS\n");printf("}\n");}
 ;
 
 
@@ -220,11 +220,14 @@ vlist: vlist vir ID            {} // récursion gauche pour traiter les variable
                                   makeOffset();
                                   insidemain=0;
                                 }
+                                else if(depth!=0){
+                                  makeOffset();
+                                }
                                 attribute r = makeSymbol(typet, offset, depth);
                                 sid sym = string_to_sid($1);
                                 $<symbol_value>0 = set_symbol_value(sym, r);
                                 if(type=="int"){
-                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, depth);
+                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, r->depth);
                                 }
                                 else if(type=="float"){
                                   printf("// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
@@ -261,10 +264,10 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       {printf("SAVEBP // entering block\n"); inside++;}
+ao : AO                       {offset=0;printf("SAVEBP // entering block\n"); inside++;}
 ;
 
-af : AF                       {if (inside>1) {remove_symbols(inside);};printf("RESTOREBP // exiting block\n");inside--;}
+af : AF                       {if (inside>0) {remove_symbols(inside);};printf("RESTOREBP // exiting block\n");inside--;}
 ;
 
 
@@ -477,19 +480,27 @@ int main () {
      sur ce fichier pour lancer dessus la compilation.
    */
 
-char * header=
+
+char * include=
 "// PCode Header\n\
-#include \"PCode.h\"\n\
-\n\
-int main() {\n\
+#include \"../PCode/PCode.h\"\n\
+\n";
+
+printf("%s\n",include);
+
+yyparse ();
+
+char * header=
+"int main() {\n\
 pcode_main();\n\
 return stack[sp-1].int_value;\n\
-}\n";  
+}\n"; 
+
 
  printf("%s\n",header); // ouput header
 
   
-return yyparse ();
+return 1;
  
  
 } 

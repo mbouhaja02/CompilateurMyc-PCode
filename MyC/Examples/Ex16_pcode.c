@@ -1,10 +1,6 @@
 // PCode Header
-#include "PCode.h"
+#include "../PCode/PCode.h"
 
-int main() {
-pcode_main();
-return stack[sp-1].int_value;
-}
 
 void pcode_fact() {
 // Argument  of function fact in TDS with offset -1
@@ -32,6 +28,7 @@ MULTI
 return;
 End_0:
 // Fin conditionelle 0
+// Exiting function block, removing loc var and arg from TDS
 }
 void pcode_main() {
 // loading function fact arguments
@@ -41,4 +38,11 @@ CALL(pcode_fact)
 RESTOREBP 
 ENDCALL(1)  // unloading 1 args of function fact
 return;
+// Removing variable x at depth 1
+// Exiting function block, removing loc var and arg from TDS
 }
+int main() {
+pcode_main();
+return stack[sp-1].int_value;
+}
+

@@ -1,10 +1,6 @@
 // PCode Header
-#include "PCode.h"
+#include "../PCode/PCode.h"
 
-int main() {
-pcode_main();
-return stack[sp-1].int_value;
-}
 
 void pcode_main() {
 LOADI(1)
@@ -15,4 +11,10 @@ MULTF
 I2F2 // converting first arg to float
 ADDF 
 return;
+// Exiting function block, removing loc var and arg from TDS
 }
+int main() {
+pcode_main();
+return stack[sp-1].int_value;
+}
+

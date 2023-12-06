@@ -1,10 +1,6 @@
 // PCode Header
-#include "PCode.h"
+#include "../PCode/PCode.h"
 
-int main() {
-pcode_main();
-return stack[sp-1].int_value;
-}
 
 void pcode_main() {
 // Declare x of type int with offset 1 at depth 1 
@@ -30,4 +26,11 @@ RESTOREBP // exiting block
 RESTOREBP // exiting block
 LOADI(1)
 return;
+// Removing variable x at depth 1
+// Exiting function block, removing loc var and arg from TDS
 }
+int main() {
+pcode_main();
+return stack[sp-1].int_value;
+}
+
