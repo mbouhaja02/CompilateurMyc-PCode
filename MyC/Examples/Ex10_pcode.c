@@ -2,15 +2,6 @@
 #include "../PCode/PCode.h"
 
 
-// Declare x of type int with offset 0 at depth 0 
-LOADI(0)
-
-// Declare y of type int with offset 1 at depth 0 
-LOADI(0)
-
-// Declare z of type int with offset 2 at depth 0 
-LOADI(0)
-
 void pcode_main() {
 LOADI(3)
 STOREP(0) // storing x value
@@ -59,6 +50,9 @@ return;
 // Exiting function block, removing loc var and arg from TDS
 }
 int main() {
+// Declare z of type int with offset 2 at depth 0 
+LOADI(0)
+
 pcode_main();
 return stack[sp-1].int_value;
 }

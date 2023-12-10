@@ -35,9 +35,9 @@ void yyerror (char* s) {
     for (int i = 1; i < depth; i++) {
         strcat(res, "[stack");
     }
-    strcat(res, "[bp]");
+    strcat(res, "[bp].int_value");
     for (int i = 1; i < depth; i++) {
-        strcat(res, "]");
+        strcat(res, "].int_value");
     }
     }
 }
@@ -46,6 +46,7 @@ void yyerror (char* s) {
  int typet;
  int bdl;
  int tab[10];
+ char str[1000];
 
  void imprimerTableau(int tableau[], int taille) {
     for (int i = 0; i < taille; i++) {
@@ -227,10 +228,12 @@ vlist: vlist vir ID            {} // récursion gauche pour traiter les variable
                                 sid sym = string_to_sid($1);
                                 $<symbol_value>0 = set_symbol_value(sym, r);
                                 if(type=="int"){
-                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, r->depth);
+                                  sprintf(str, "// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, r->depth);
+                                  //printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, r->depth);
                                 }
                                 else if(type=="float"){
-                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
+                                  sprintf(str, "// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
+                                  //printf("// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
                                 }}
 ;
 
@@ -311,7 +314,7 @@ bool_cond : PO exp PF         {printf("IFN(False_%d) \n// la condition %d est vr
 if : IF                       {num_cond++;$<label_value>0=num_cond;printf("// Debut conditionelle %d\n", $<label_value>0);}
 ;
 
-else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d\n",$<label_value>-3, $<label_value>-3);printf("//la condition %d est fausse\n", $<label_value>-3);};
+else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d:\n",$<label_value>-3, $<label_value>-3);printf("//la condition %d est fausse\n", $<label_value>-3);};
 ;
 
 // IV.4. Iterations
@@ -481,24 +484,28 @@ int main () {
    */
 
 
-char * include=
-"// PCode Header\n\
-#include \"../PCode/PCode.h\"\n\
-\n";
+    char *include =
+        "// PCode Header\n"
+        "#include \"../PCode/PCode.h\"\n"
+        "\n";
 
-printf("%s\n",include);
+    printf("%s\n", include);
 
-yyparse ();
+    // Supposons que yyparse() est défini ailleurs
+    yyparse();
 
-char * header=
-"int main() {\n\
-pcode_main();\n\
-return stack[sp-1].int_value;\n\
-}\n"; 
+    char *header =
+        "int main() {"
+        "\n";
 
+    char *mainCode =
+        "pcode_main();\n"
+        "return stack[sp-1].int_value;\n"
+        "}\n";
 
- printf("%s\n",header); // ouput header
-
+    // Affichez le contenu de header et mainCode
+    printf("%s%s", header, str);
+    printf("%s\n", mainCode);
   
 return 1;
  
