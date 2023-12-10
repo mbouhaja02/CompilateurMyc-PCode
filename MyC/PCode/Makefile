@@ -57,4 +57,4 @@ Ex17 :	pcode
 	gcc -o Ex17 ${path}/Ex17_pcode.c PCode.o
 
 clean :
-	rm -f *_pcode.c *.o
+	rm -f *_pcode.c *.o Ex*
