@@ -1,5 +1,7 @@
 #!/bin/bash
+cd src
 make
+cd ..
 
 for num in {01..17}; do
     echo "Comparaison des fichiers pour le numéro: $num"
@@ -27,5 +29,6 @@ for num in {01..17}; do
 
     echo ""  # Ligne vide pour une meilleure lisibilité entre les comparaisons
 done
-
+cd src
 make clean
+cd ..
