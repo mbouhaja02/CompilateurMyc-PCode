@@ -35,9 +35,9 @@ void yyerror (char* s) {
     for (int i = 1; i < depth; i++) {
         strcat(res, "[stack");
     }
-    strcat(res, "[bp].int_value");
+    strcat(res, "[bp].index_value");
     for (int i = 1; i < depth; i++) {
-        strcat(res, "].int_value");
+        strcat(res, "].index_value");
     }
     }
 }

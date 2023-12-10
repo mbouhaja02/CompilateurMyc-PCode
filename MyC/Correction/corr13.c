@@ -26,7 +26,7 @@ STOREP(bp + 1) // storing x value in current block
 // Removing variable x at depth 3
 RESTOREBP // exiting block
 LOADP(bp+1) // loading x value
-STOREP(stack[bp].int_value + 2) // storing y value in current block
+STOREP(stack[bp].index_value + 2) // storing y value in current block
 // Removing variable x at depth 2
 RESTOREBP // exiting block
 LOADP(bp+1) // loading x value
