@@ -1,12 +1,11 @@
 #!/bin/bash
-
 make
 
 for num in {01..17}; do
     echo "Comparaison des fichiers pour le numéro: $num"
     ./run "Ex${num}"
 
-    file1="Examples/Ex${num}_pcode.c"
+    file1="test/Ex${num}_pcode.c"
     file2="Correction/corr${num}.c"
 
     # Création de copies temporaires des fichiers sans les commentaires

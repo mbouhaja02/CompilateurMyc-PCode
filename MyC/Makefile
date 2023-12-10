@@ -1,17 +1,18 @@
 all :	lang
+SRC=src
 
-syntax : lexic	lang.y
-	bison -v -y  -d  lang.y
-lexic : lang.l
-	flex lang.l
+syntax : lexic	${SRC}/lang.y
+	bison -v -y  -d  ${SRC}/lang.y
+lexic : ${SRC}/lang.l
+	flex ${SRC}/lang.l
 
 PCode/PCode.o : PCode/PCode.c PCode/PCode.h
 	cd PCode; make pcode
 
-lang		:	syntax Table_des_symboles.c Table_des_chaines.c PCode/PCode.o Table_des_conditions.c
-	gcc -o lang lex.yy.c y.tab.c PCode/PCode.o Table_des_symboles.c Table_des_chaines.c Table_des_conditions.c
+lang		:	syntax ${SRC}/Table_des_symboles.c ${SRC}/Table_des_chaines.c PCode/PCode.o
+	gcc -o ${SRC}/lang ${SRC}/lex.yy.c ${SRC}/y.tab.c PCode/PCode.o ${SRC}/Table_des_symboles.c ${SRC}/Table_des_chaines.c 
 
 clean		:	
-	rm -f lex.yy.c *.o y.tab.h y.tab.c lang *~ y.output; cd PCode; make clean
+	rm -f lex.yy.c *.o y.tab.h y.tab.c ${SRC}/lang *~ y.output; cd PCode; make clean
 
 

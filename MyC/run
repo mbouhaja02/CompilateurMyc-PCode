@@ -1,3 +1,4 @@
 # bin/bash
-
-./lang < Examples/$1.myc > Examples/$1_pcode.c
+cd src
+./lang < ../test/$1.myc > ../test/$1_pcode.c
+cd ..

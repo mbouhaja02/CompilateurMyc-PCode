@@ -1,6 +1,6 @@
-path="../Examples"
+path="../test"
 
-all :	Ex1 Ex2 Ex3 Ex4 Ex5 Ex6 Ex7 Ex8 Ex9 Ex10 Ex11 Ex12 Ex13 Ex14 Ex15 EX16 Ex17
+all :	Ex1 Ex2 Ex3 Ex4 Ex5 Ex6 Ex7 Ex8 Ex9 Ex10 Ex11 Ex12 Ex13 Ex14 Ex15 Ex16 Ex17
 
 pcode : PCode.c PCode.h
 	gcc -c PCode.c
