@@ -33,6 +33,12 @@ return;
 // Exiting function block, removing loc var and arg from TDS
 }
 int main() {
+// Declare x of type int with offset 0 at depth 0 
+LOADI(0)
+
+// Declare y of type int with offset 1 at depth 0 
+LOADI(0)
+
 // Declare z of type int with offset 2 at depth 0 
 LOADI(0)
 

@@ -13,7 +13,7 @@ IFN(False_0)
 LOADI(1)
 return;
 GOTO(End_0)
-False_0
+False_0:
 //la condition 0 est fausse
 LOADP(bp+-1) // loading x value
 // loading function fact arguments

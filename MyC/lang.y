@@ -47,6 +47,7 @@ void yyerror (char* s) {
  int bdl;
  int tab[10];
  char str[1000];
+ char result[1000];
 
  void imprimerTableau(int tableau[], int taille) {
     for (int i = 0; i < taille; i++) {
@@ -227,14 +228,28 @@ vlist: vlist vir ID            {} // récursion gauche pour traiter les variable
                                 attribute r = makeSymbol(typet, offset, depth);
                                 sid sym = string_to_sid($1);
                                 $<symbol_value>0 = set_symbol_value(sym, r);
-                                if(type=="int"){
+                                if(depth>0){
+                                  if(type=="int"){
+                                  //sprintf(str, "// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, r->depth);
+                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, r->depth);
+                                }
+                                else if(type=="float"){
+                                  //sprintf(str, "// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
+                                  printf("// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
+                                }
+                                }
+                                else{
+                                  if(type=="int"){
                                   sprintf(str, "// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, r->depth);
                                   //printf("// Declare %s of type %s with offset %d at depth %d \nLOADI(0)\n\n", $1, type,offset, r->depth);
                                 }
                                 else if(type=="float"){
                                   sprintf(str, "// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
                                   //printf("// Declare %s of type %s with offset %d at depth %d \nLOADF(0.0)\n\n", $1, type,offset, depth);
-                                }}
+                                }
+                                  strcat(result, str);
+                                }
+                                }
 ;
 
 type
@@ -504,7 +519,7 @@ int main () {
         "}\n";
 
     // Affichez le contenu de header et mainCode
-    printf("%s%s", header, str);
+    printf("%s%s", header, result);
     printf("%s\n", mainCode);
   
 return 1;

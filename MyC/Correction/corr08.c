@@ -2,15 +2,6 @@
 #include "../PCode/PCode.h"
 
 
-// Declare x of type float with offset 0 at depth 0 
-LOADF(0.0)
-
-// Declare y of type float with offset 1 at depth 0 
-LOADF(0.0)
-
-// Declare z of type int with offset 2 at depth 0 
-LOADI(0)
-
 void pcode_main() {
 // Debut conditionelle 0
 LOADP(0) // loading x value
@@ -28,7 +19,7 @@ IFN(False_1)
 LOADI(1)
 STOREP(2) // storing z value
 GOTO(End_1)
-False_1
+False_1:
 //la condition 1 est fausse
 LOADI(2)
 STOREP(2) // storing z value
@@ -36,7 +27,7 @@ End_1:
 // Fin conditionelle 1
 RESTOREBP // exiting block
 GOTO(End_0)
-False_0
+False_0:
 //la condition 0 est fausse
 SAVEBP // entering block
 // Debut conditionelle 2
@@ -48,7 +39,7 @@ IFN(False_2)
 LOADI(3)
 STOREP(2) // storing z value
 GOTO(End_2)
-False_2
+False_2:
 //la condition 2 est fausse
 LOADI(4)
 STOREP(2) // storing z value
@@ -62,6 +53,15 @@ return;
 // Exiting function block, removing loc var and arg from TDS
 }
 int main() {
+// Declare x of type float with offset 0 at depth 0 
+LOADF(0.0)
+
+// Declare y of type float with offset 1 at depth 0 
+LOADF(0.0)
+
+// Declare z of type int with offset 2 at depth 0 
+LOADI(0)
+
 pcode_main();
 return stack[sp-1].int_value;
 }
